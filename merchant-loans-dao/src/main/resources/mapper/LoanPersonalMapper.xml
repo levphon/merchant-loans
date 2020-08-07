@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.payu.modules.mapper.LoanPersonalMapper">
+  <resultMap id="BaseResultMap" type="cn.com.payu.modules.entity.LoanPersonal">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="loan_id" jdbcType="BIGINT" property="loanId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="certificate_type" jdbcType="INTEGER" property="certificateType" />
+    <result column="certificate_number" jdbcType="VARCHAR" property="certificateNumber" />
+    <result column="certificate_expiryDate" jdbcType="TIMESTAMP" property="certificateExpirydate" />
+    <result column="institution" jdbcType="VARCHAR" property="institution" />
+    <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="education_info" jdbcType="INTEGER" property="educationInfo" />
+    <result column="marriage_info" jdbcType="INTEGER" property="marriageInfo" />
+    <result column="enable_status" jdbcType="INTEGER" property="enableStatus" />
+    <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="created_by" jdbcType="INTEGER" property="createdBy" />
+    <result column="updated_date" jdbcType="TIMESTAMP" property="updatedDate" />
+    <result column="updated_by" jdbcType="INTEGER" property="updatedBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, loan_id, `name`, gender, certificate_type, certificate_number, certificate_expiryDate, 
+    institution, phone_number, email, education_info, marriage_info, enable_status, del_flag, 
+    created_date, created_by, updated_date, updated_by
+  </sql>
+</mapper>

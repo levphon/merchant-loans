@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.payu.modules.mapper.LoanSocialMapper">
+  <resultMap id="BaseResultMap" type="cn.com.payu.modules.entity.LoanSocial">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="loan_id" jdbcType="BIGINT" property="loanId" />
+    <result column="insured_address" jdbcType="VARCHAR" property="insuredAddress" />
+    <result column="insured_day" jdbcType="INTEGER" property="insuredDay" />
+    <result column="old_address" jdbcType="VARCHAR" property="oldAddress" />
+    <result column="insured_standard" jdbcType="REAL" property="insuredStandard" />
+    <result column="get_social_time" jdbcType="TIMESTAMP" property="getSocialTime" />
+    <result column="annuity" jdbcType="REAL" property="annuity" />
+    <result column="medical" jdbcType="REAL" property="medical" />
+    <result column="earliest_date" jdbcType="TIMESTAMP" property="earliestDate" />
+    <result column="lately_status" jdbcType="INTEGER" property="latelyStatus" />
+    <result column="enable_status" jdbcType="INTEGER" property="enableStatus" />
+    <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="created_by" jdbcType="INTEGER" property="createdBy" />
+    <result column="updated_date" jdbcType="TIMESTAMP" property="updatedDate" />
+    <result column="updated_by" jdbcType="INTEGER" property="updatedBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, loan_id, insured_address, insured_day, old_address, insured_standard, get_social_time, 
+    annuity, medical, earliest_date, lately_status, enable_status, del_flag, created_date, 
+    created_by, updated_date, updated_by
+  </sql>
+</mapper>
