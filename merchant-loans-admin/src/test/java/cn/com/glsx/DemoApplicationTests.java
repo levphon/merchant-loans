@@ -170,7 +170,9 @@ public class DemoApplicationTests {
 
     @Test
     public void test10() {
-        BasicsGetIndustryTypeListResp resp = loansService.basicsGetIndustryTypeList(new BasicsGetIndustryTypeListReq());
+        BasicsGetIndustryTypeListReq req = new BasicsGetIndustryTypeListReq();
+        req.setPid(3);
+        BasicsGetIndustryTypeListResp resp = loansService.basicsGetIndustryTypeList(req);
         System.out.println(resp);
 
 //        [
@@ -297,8 +299,6 @@ public class DemoApplicationTests {
 //        方雁	632522197705181945	13889954463
 //        余珍	140107197302044707	15678228517
 
-
-        List<ApplymentIndexAddress> addressData = new ArrayList<>();
         ApplymentIndexAddress address = new ApplymentIndexAddress();
         address.setTogetherDwell(1);
         address.setHousingType(2);
@@ -308,14 +308,12 @@ public class DemoApplicationTests {
         address.setPresentCity("深圳市");
         address.setPresentRegion("南山区");
         address.setPresentAddress("沙河西路");
-        addressData.add(address);
 
-        List<ApplymentIndexJob> jobData = new ArrayList<>();
         ApplymentIndexJob job = new ApplymentIndexJob();
         job.setBusinessType(1);
         job.setCompanyName("杜拉拉");
         job.setOperateTime(System.currentTimeMillis());
-        job.setIndustryCode(3);
+        job.setIndustryCode(21);
         job.setContactNumber("0755-6546562");
         job.setMonthTurnover(new BigDecimal("6596536"));
         job.setOperateAddress("广东深圳南山智园");
@@ -323,7 +321,6 @@ public class DemoApplicationTests {
         job.setStation("工程师");
         job.setWage(new BigDecimal(12345));
         job.setUnitType(2);
-        jobData.add(job);
 
         List<ApplymentIndexContact> contactData = new ArrayList<>();
         ApplymentIndexContact contact1 = new ApplymentIndexContact();
@@ -348,10 +345,8 @@ public class DemoApplicationTests {
         contactData.add(contact3);
 
         //incomeData	是	array		收入信息，多维数组(非必填，但对私和对公必须选1个，若无法区分对私和对公时，可统一上传到对私流水信息)
-        List<ApplymentIndexIncome> incomeData = new ArrayList<>();
-
         ApplymentIndexIncome indexIncome = new ApplymentIndexIncome();
-        List<ApplymentIndexIncomePrivate> privateIncome = new ArrayList<>();
+
         ApplymentIndexIncomePrivate incomePrivate = new ApplymentIndexIncomePrivate();
         incomePrivate.setNearlyOneMonth(26526F);
         incomePrivate.setNearlyTwoMonth(26526F);
@@ -360,29 +355,21 @@ public class DemoApplicationTests {
         incomePrivate.setNearlyFiveMonth(26526F);
         incomePrivate.setNearlySixMonth(26526F);
         incomePrivate.setInterestAmount(26526F);
-        privateIncome.add(incomePrivate);
-
-        indexIncome.setPrivateIncome(privateIncome);
-        incomeData.add(indexIncome);
+        indexIncome.setPrivateIncome(incomePrivate);
 
 //        List<ApplymentIndexSocial> socialData = new ArrayList<>();
 //        List<ApplymentIndexProvidentFund> providentFundData = new ArrayList<>();
 
-        List<ApplymentIndexDocument> documentData = new ArrayList<>();
         ApplymentIndexDocument document = new ApplymentIndexDocument();
         document.setIdCardFront("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1596692254111&di=581b29a00f3d37e7345da74792eacf29&imgtype=0&src=http%3A%2F%2Fpic.51yuansu.com%2Fpic%2Fcover%2F00%2F15%2F96%2F57a1991e016dc_610.jpg");
         document.setIdCardBack("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1596692254111&di=581b29a00f3d37e7345da74792eacf29&imgtype=0&src=http%3A%2F%2Fpic.51yuansu.com%2Fpic%2Fcover%2F00%2F15%2F96%2F57a1991e016dc_610.jpg");
-        documentData.add(document);
 
-        List<ApplymentIndexPedestrian> pedestrianData = new ArrayList<>();
         ApplymentIndexPedestrian pedestrian = new ApplymentIndexPedestrian();
         pedestrian.setAccount("6565656546");
         pedestrian.setPassword("123456");
         pedestrian.setAuthorizationCode("3594");
         pedestrian.setExpiredTime(System.currentTimeMillis());
-        pedestrianData.add(pedestrian);
 
-        List<ApplymentIndexLoan> loanData = new ArrayList<>();
         ApplymentIndexLoan loan = new ApplymentIndexLoan();
         loan.setProductId(13);
         loan.setAnnuity(new BigDecimal(24000));
@@ -390,16 +377,15 @@ public class DemoApplicationTests {
         loan.setLoanPeriod(24);
         loan.setMerchantRate(3.8F);
         loan.setPayMethod(2);
-        loanData.add(loan);
 
         req.setPersonalData(personal);
-        req.setAddressData(addressData);
-        req.setJobData(jobData);
+        req.setAddressData(address);
+        req.setJobData(job);
         req.setContactData(contactData);
-        req.setIncomeData(incomeData);
-        req.setDocumentData(documentData);
-        req.setPedestrianData(pedestrianData);
-        req.setLoanData(loanData);
+        req.setIncomeData(indexIncome);
+        req.setDocumentData(document);
+        req.setPedestrianData(pedestrian);
+        req.setLoanData(loan);
 
         ApplymentIndexResp resp = loansService.applymentIndex(req);
         System.out.println(resp);
@@ -408,7 +394,7 @@ public class DemoApplicationTests {
     @Test
     public void test13() {
         ApplymentGetSignStateReq req = new ApplymentGetSignStateReq();
-        req.setOrderNumber("B20200807155138000004");
+        req.setOrderNumber("B20200807164723000008");
         ApplymentGetSignStateResp resp = loansService.applymentGetSignState(req);
         System.out.println(resp);
     }

@@ -18,31 +18,31 @@ public class ApplymentIndexDocument {
     /**
      * 信用报告的文件链接数组
      */
-    private String creditReport;
+    private String[] creditReport;
 
     /**
      * 收入证明的文件链接数组
      */
-    private String incomeProof;
+    private String[] incomeProof;
 
     /**
      * 住址证明的文件链接数组
      */
-    private String addressProof;
+    private String[] addressProof;
 
     /**
      * 其他辅助资料的文件链接数组
      */
-    private String assistMaterial;
+    private String[] assistMaterial;
 
     /**
      * 申请资料的文件链接数组
      */
-    private String applyMaterial;
+    private String[] applyMaterial;
 
     /**
      * 签约视频的文件链接数组
      */
-    private String signVideo;
+    private String[] signVideo;
 
 }

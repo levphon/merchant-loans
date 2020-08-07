@@ -107,7 +107,7 @@ public class AccessUtils {
     @SuppressWarnings({"unchecked"})
     private <T> T call(String url, Object param, Class<T> clazz) {
         String paramsJson = gson.toJson(param);
-        log.info("【商户贷】http请求信息—— url[{}] param[{}]", url, paramsJson);
+        log.info("【商户贷】http请求信息—— url[{}] params[{}]", url, paramsJson);
         String result = null;
         try {
             HttpUtils httpUtils = new HttpUtils();
