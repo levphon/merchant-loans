@@ -1,6 +1,6 @@
 package cn.com.payu.modules.loans.controller;
 
-import cn.com.glsx.admin.services.userservice.model.UserDTO;
+import cn.com.payu.modules.loans.model.ApplymentIndexDTO;
 import cn.com.payu.modules.loans.service.LoansBizService;
 import com.glsx.plat.core.web.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class LoansController {
     }
 
     @PostMapping(value = "/applymentIndex")
-    public R applymentIndex(@RequestBody @Valid UserDTO userDTO) {
+    public R applymentIndex(@RequestBody @Valid ApplymentIndexDTO indexDTO) {
 
         return R.ok();
     }

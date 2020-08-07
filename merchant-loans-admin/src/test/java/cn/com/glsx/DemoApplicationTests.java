@@ -264,7 +264,7 @@ public class DemoApplicationTests {
         personal.setCertificateType(1);
         personal.setCertificateNumber("450681199904105960");
         personal.setPhoneNumber("13475804735");
-        personal.setEmail("13475804735@mobile.com");
+        personal.setEmail("levphon@vip.qq.com");
         personal.setEducationInfo(2);
         personal.setMarriageInfo(1);
 
@@ -300,7 +300,7 @@ public class DemoApplicationTests {
 
         List<ApplymentIndexAddress> addressData = new ArrayList<>();
         ApplymentIndexAddress address = new ApplymentIndexAddress();
-        address.setTogetherDwell(8);
+        address.setTogetherDwell(1);
         address.setHousingType(2);
         address.setLiveDate(System.currentTimeMillis());
         address.setMonthRent(new BigDecimal("3265"));
@@ -327,11 +327,25 @@ public class DemoApplicationTests {
 
         List<ApplymentIndexContact> contactData = new ArrayList<>();
         ApplymentIndexContact contact1 = new ApplymentIndexContact();
-        contact1.setContactName("张三");
+        contact1.setContactName("张三1");
         contact1.setRelation(6);
-        contact1.setContactNumber("15965224928");
+        contact1.setContactNumber("15965224921");
         contact1.setIsKnow(1);
+
+        ApplymentIndexContact contact2 = new ApplymentIndexContact();
+        contact2.setContactName("张三2");
+        contact2.setRelation(6);
+        contact2.setContactNumber("15965224922");
+        contact2.setIsKnow(1);
+
+        ApplymentIndexContact contact3 = new ApplymentIndexContact();
+        contact3.setContactName("张三3");
+        contact3.setRelation(6);
+        contact3.setContactNumber("15965224923");
+        contact3.setIsKnow(1);
         contactData.add(contact1);
+        contactData.add(contact2);
+        contactData.add(contact3);
 
         //incomeData	是	array		收入信息，多维数组(非必填，但对私和对公必须选1个，若无法区分对私和对公时，可统一上传到对私流水信息)
         List<ApplymentIndexIncome> incomeData = new ArrayList<>();
@@ -392,45 +406,61 @@ public class DemoApplicationTests {
     }
 
     @Test
+    public void test13() {
+        ApplymentGetSignStateReq req = new ApplymentGetSignStateReq();
+        req.setOrderNumber("B20200807155138000004");
+        ApplymentGetSignStateResp resp = loansService.applymentGetSignState(req);
+        System.out.println(resp);
+    }
+
+    @Test
     public void test12() {
         ApplymentRejectResp resp = loansService.applymentReject(new ApplymentRejectReq());
         System.out.println(resp);
     }
 
     @Test
-    public void test13() {
-        ApplymentGetSignStateReq req = new ApplymentGetSignStateReq();
-        req.setOrderNumber("B34938953898539");
-        ApplymentGetSignStateResp resp = loansService.applymentGetSignState(req);
-        System.out.println(resp);
-    }
-
-    @Test
     public void test14() {
-        EsignSigncontractResp resp = loansService.esignSigncontract(new EsignSigncontractReq());
+        ApplymentQueryOrderReq req = new ApplymentQueryOrderReq();
+        req.setOrderNumber("B20200807154725000003");
+        ApplymentQueryOrderResp resp = loansService.applymentQueryOrder(req);
         System.out.println(resp);
     }
 
     @Test
     public void test15() {
-        EsignMycontractResp resp = loansService.esignMycontract(new EsignMycontractReq());
+        ApplymentQueryplansReq req = new ApplymentQueryplansReq();
+        req.setOrderNumber("B20200807154725000003");
+        ApplymentQueryplansResp resp = loansService.applymentQueryplans(req);
         System.out.println(resp);
     }
 
     @Test
     public void test16() {
-        EsignGetSignResp resp = loansService.esignGetSignUrl(new EsignGetSignReq());
+        EsignSigncontractResp resp = loansService.esignSigncontract(new EsignSigncontractReq());
         System.out.println(resp);
     }
 
     @Test
     public void test17() {
-        PayGetBanklistResp resp = loansService.payGetbanklist(new PayGetBanklistReq());
+        EsignMycontractResp resp = loansService.esignMycontract(new EsignMycontractReq());
         System.out.println(resp);
     }
 
     @Test
     public void test18() {
+        EsignGetSignResp resp = loansService.esignGetSignUrl(new EsignGetSignReq());
+        System.out.println(resp);
+    }
+
+    @Test
+    public void test19() {
+        PayGetBanklistResp resp = loansService.payGetbanklist(new PayGetBanklistReq());
+        System.out.println(resp);
+    }
+
+    @Test
+    public void test20() {
         PayPretiedcardReq req = new PayPretiedcardReq();
         req.setAccountName("薛倩");
         req.setAccountNo("6228480215110121391");
@@ -442,25 +472,25 @@ public class DemoApplicationTests {
     }
 
     @Test
-    public void test19() {
+    public void test21() {
         PayConfirmbindcardResp resp = loansService.payConfirmbindcard(new PayConfirmbindcardReq());
         System.out.println(resp);
     }
 
     @Test
-    public void test20() {
+    public void test22() {
         PayQuerywithholdResp resp = loansService.payQuerywithhold(new PayQuerywithholdReq());
         System.out.println(resp);
     }
 
     @Test
-    public void test21() {
+    public void test23() {
         PayGetPayInfoResp resp = loansService.payGetPayInfo(new PayGetPayInfoReq());
         System.out.println(resp);
     }
 
     @Test
-    public void test22() {
+    public void test24() {
         String s1 = gainIdService.gainId("B");
         String s2 = gainIdService.globalUniqueId("B");
         System.out.println(s1);
