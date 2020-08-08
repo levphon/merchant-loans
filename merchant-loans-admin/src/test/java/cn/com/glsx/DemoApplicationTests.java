@@ -3,7 +3,7 @@ package cn.com.glsx;
 import cn.com.payu.Application;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
-import cn.com.payu.modules.loans.service.LoansService;
+import cn.com.payu.modules.loans.service.LoansApiService;
 import com.glsx.plat.redis.service.GainIdService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,14 +20,14 @@ import java.util.List;
 public class DemoApplicationTests {
 
     @Autowired
-    private LoansService loansService;
+    private LoansApiService loansApiService;
 
     @Autowired
     private GainIdService gainIdService;
 
     @Test
     public void test1() {
-        BasicsGetLoansProductsResp resp = loansService.basicsGetLoansProducts(new BasicsGetLoansProductsReq());
+        BasicsGetLoansProductsResp resp = loansApiService.basicsGetLoansProducts(new BasicsGetLoansProductsReq());
         System.out.println(resp);
 
 //        {
@@ -48,7 +48,7 @@ public class DemoApplicationTests {
 
     @Test
     public void test2() {
-        BasicsGetLoansPeriodsResp resp = loansService.basicsGetLoansPeriods(new BasicsGetLoansPeriodsReq());
+        BasicsGetLoansPeriodsResp resp = loansApiService.basicsGetLoansPeriods(new BasicsGetLoansPeriodsReq());
         System.out.println(resp);
 
 //        {
@@ -60,7 +60,7 @@ public class DemoApplicationTests {
 
     @Test
     public void test3() {
-        BasicsGetHousingTypesResp resp = loansService.basicsGetHousingTypes(new BasicsGetHousingTypesReq());
+        BasicsGetHousingTypesResp resp = loansApiService.basicsGetHousingTypes(new BasicsGetHousingTypesReq());
         System.out.println(resp);
 
 //        {
@@ -76,7 +76,7 @@ public class DemoApplicationTests {
 
     @Test
     public void test4() {
-        BasicsGetTogetherDwellListResp resp = loansService.basicsGetTogetherDwellList(new BasicsGetTogetherDwellListReq());
+        BasicsGetTogetherDwellListResp resp = loansApiService.basicsGetTogetherDwellList(new BasicsGetTogetherDwellListReq());
         System.out.println(resp);
 
 //        {
@@ -93,7 +93,7 @@ public class DemoApplicationTests {
 
     @Test
     public void test5() {
-        BasicsGetRelationTypelListResp resp = loansService.basicsGetRelationTypelList(new BasicsGetRelationTypelListReq());
+        BasicsGetRelationTypelListResp resp = loansApiService.basicsGetRelationTypelList(new BasicsGetRelationTypelListReq());
         System.out.println(resp);
 
 //        {
@@ -110,7 +110,7 @@ public class DemoApplicationTests {
 
     @Test
     public void test6() {
-        BasicsGetLoanPurposeListResp resp = loansService.basicsGetLoanPurposeList(new BasicsGetLoanPurposeListReq());
+        BasicsGetLoanPurposeListResp resp = loansApiService.basicsGetLoanPurposeList(new BasicsGetLoanPurposeListReq());
         System.out.println(resp);
 
 //        {
@@ -128,7 +128,7 @@ public class DemoApplicationTests {
 
     @Test
     public void test7() {
-        BasicsGetEducationListResp resp = loansService.basicsGetEducationList(new BasicsGetEducationListReq());
+        BasicsGetEducationListResp resp = loansApiService.basicsGetEducationList(new BasicsGetEducationListReq());
         System.out.println(resp);
 
 //        {
@@ -142,7 +142,7 @@ public class DemoApplicationTests {
 
     @Test
     public void test8() {
-        BasicsGetMarriageListResp resp = loansService.basicsGetMarriageList(new BasicsGetMarriageListReq());
+        BasicsGetMarriageListResp resp = loansApiService.basicsGetMarriageList(new BasicsGetMarriageListReq());
         System.out.println(resp);
 
 //        {
@@ -155,7 +155,7 @@ public class DemoApplicationTests {
 
     @Test
     public void test9() {
-        BasicsGetUnitTypeListResp resp = loansService.basicsGetUnitTypeList(new BasicsGetUnitTypeListReq());
+        BasicsGetUnitTypeListResp resp = loansApiService.basicsGetUnitTypeList(new BasicsGetUnitTypeListReq());
         System.out.println(resp);
 
 //        {
@@ -172,7 +172,7 @@ public class DemoApplicationTests {
     public void test10() {
         BasicsGetIndustryTypeListReq req = new BasicsGetIndustryTypeListReq();
         req.setPid(3);
-        BasicsGetIndustryTypeListResp resp = loansService.basicsGetIndustryTypeList(req);
+        BasicsGetIndustryTypeListResp resp = loansApiService.basicsGetIndustryTypeList(req);
         System.out.println(resp);
 
 //        [
@@ -374,7 +374,7 @@ public class DemoApplicationTests {
         loan.setProductId(13);
         loan.setAnnuity(new BigDecimal(24000));
         loan.setLoanPurpose(4);
-        loan.setLoanPeriod(24);
+        loan.setLoanPeriod(12);
         loan.setMerchantRate(3.8F);
         loan.setPayMethod(2);
 
@@ -387,21 +387,21 @@ public class DemoApplicationTests {
         req.setPedestrianData(pedestrian);
         req.setLoanData(loan);
 
-        ApplymentIndexResp resp = loansService.applymentIndex(req);
+        ApplymentIndexResp resp = loansApiService.applymentIndex(req);
         System.out.println(resp);
     }
 
     @Test
     public void test13() {
         ApplymentGetSignStateReq req = new ApplymentGetSignStateReq();
-        req.setOrderNumber("B20200807164723000008");
-        ApplymentGetSignStateResp resp = loansService.applymentGetSignState(req);
+        req.setOrderNumber("B20200807235013000011");
+        ApplymentGetSignStateResp resp = loansApiService.applymentGetSignState(req);
         System.out.println(resp);
     }
 
     @Test
     public void test12() {
-        ApplymentRejectResp resp = loansService.applymentReject(new ApplymentRejectReq());
+        ApplymentRejectResp resp = loansApiService.applymentReject(new ApplymentRejectReq());
         System.out.println(resp);
     }
 
@@ -409,39 +409,42 @@ public class DemoApplicationTests {
     public void test14() {
         ApplymentQueryOrderReq req = new ApplymentQueryOrderReq();
         req.setOrderNumber("B20200807154725000003");
-        ApplymentQueryOrderResp resp = loansService.applymentQueryOrder(req);
+        ApplymentQueryOrderResp resp = loansApiService.applymentQueryOrder(req);
         System.out.println(resp);
     }
 
     @Test
     public void test15() {
-        ApplymentQueryplansReq req = new ApplymentQueryplansReq();
+        ApplymentQueryPlansReq req = new ApplymentQueryPlansReq();
         req.setOrderNumber("B20200807154725000003");
-        ApplymentQueryplansResp resp = loansService.applymentQueryplans(req);
+        ApplymentQueryPlansResp resp = loansApiService.applymentQueryplans(req);
         System.out.println(resp);
     }
 
     @Test
     public void test16() {
-        EsignSigncontractResp resp = loansService.esignSigncontract(new EsignSigncontractReq());
+        EsignSigncontractResp resp = loansApiService.esignSigncontract(new EsignSigncontractReq());
         System.out.println(resp);
     }
 
     @Test
     public void test17() {
-        EsignMycontractResp resp = loansService.esignMycontract(new EsignMycontractReq());
+        EsignMycontractResp resp = loansApiService.esignMycontract(new EsignMycontractReq());
         System.out.println(resp);
     }
 
     @Test
     public void test18() {
-        EsignGetSignResp resp = loansService.esignGetSignUrl(new EsignGetSignReq());
+        EsignGetSignUrlReq req = new EsignGetSignUrlReq();
+        req.setOrderNumber("orderNumber");
+        req.setSignType(1);
+        EsignGetSignUrlResp resp = loansApiService.esignGetSignUrl(req);
         System.out.println(resp);
     }
 
     @Test
     public void test19() {
-        PayGetBanklistResp resp = loansService.payGetbanklist(new PayGetBanklistReq());
+        PayGetBanklistResp resp = loansApiService.payGetbanklist(new PayGetBanklistReq());
         System.out.println(resp);
     }
 
@@ -453,25 +456,25 @@ public class DemoApplicationTests {
         req.setIdcardNo("450681199904105960");
         req.setMobile("13475804735");
         req.setOrderNumber("B34938953898539");
-        PayPretiedcardResp resp = loansService.payPretiedcard(new PayPretiedcardReq());
+        PayPretiedcardResp resp = loansApiService.payPretiedcard(new PayPretiedcardReq());
         System.out.println(resp);
     }
 
     @Test
     public void test21() {
-        PayConfirmbindcardResp resp = loansService.payConfirmbindcard(new PayConfirmbindcardReq());
+        PayConfirmbindcardResp resp = loansApiService.payConfirmbindcard(new PayConfirmbindcardReq());
         System.out.println(resp);
     }
 
     @Test
     public void test22() {
-        PayQuerywithholdResp resp = loansService.payQuerywithhold(new PayQuerywithholdReq());
+        PayQueryWithholdResp resp = loansApiService.payQuerywithhold(new PayQueryWithholdReq());
         System.out.println(resp);
     }
 
     @Test
     public void test23() {
-        PayGetPayInfoResp resp = loansService.payGetPayInfo(new PayGetPayInfoReq());
+        PayGetPayInfoResp resp = loansApiService.payGetPayInfo(new PayGetPayInfoReq());
         System.out.println(resp);
     }
 

@@ -4,4 +4,7 @@ import lombok.Data;
 
 @Data
 public class EsignMycontractResp extends AbstractApiResp {
+
+    private EsignMycontractRespData data;
+
 }

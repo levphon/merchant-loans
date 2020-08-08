@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
 @Data
-public class EsignGetSignReq extends AbstractApiReq {
+public class EsignGetSignUrlReq extends AbstractApiReq {
 
     @SerializedName("order_number")
     private String orderNumber;//	是	string	32	商户订单号

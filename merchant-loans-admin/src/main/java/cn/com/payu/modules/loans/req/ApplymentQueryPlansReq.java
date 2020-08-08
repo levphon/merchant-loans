@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
 @Data
-public class ApplymentQueryplansReq extends AbstractApiReq {
+public class ApplymentQueryPlansReq extends AbstractApiReq {
 
     @SerializedName("order_number")
     private String orderNumber;//	是	string	32	我方进件单号

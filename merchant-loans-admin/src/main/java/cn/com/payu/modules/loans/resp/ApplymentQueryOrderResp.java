@@ -4,4 +4,7 @@ import lombok.Data;
 
 @Data
 public class ApplymentQueryOrderResp extends AbstractApiResp {
+
+    private ApplymentQueryOrderRespData data;
+
 }

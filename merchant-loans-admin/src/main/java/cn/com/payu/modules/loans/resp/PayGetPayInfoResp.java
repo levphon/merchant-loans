@@ -4,4 +4,7 @@ import lombok.Data;
 
 @Data
 public class PayGetPayInfoResp extends AbstractApiResp {
+
+    private PayGetPayInfoRespData data;
+
 }
