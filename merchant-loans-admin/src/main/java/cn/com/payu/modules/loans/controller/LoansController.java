@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/mloans")
 public class LoansController {
 
     @Autowired
@@ -90,79 +89,79 @@ public class LoansController {
         return R.ok().data(itemList);
     }
 
-    @PostMapping(value = "/applymentIndex")
+    @PostMapping(value = "/applyment/index")
     public R applymentIndex(@RequestBody @Valid ApplymentIndexReq req) {
         loansBizService.applymentIndex(req);
         return R.ok();
     }
 
-    @PostMapping(value = "/applymentReject")
+    @PostMapping(value = "/applyment/reject")
     public R applymentReject(@RequestBody @Valid ApplymentRejectReq req) {
         loansBizService.applymentReject(req);
         return R.ok();
     }
 
-    @GetMapping(value = "/applymentGetSignState")
+    @GetMapping(value = "/applyment/getSignState")
     public R applymentGetSignState(String orderNumber) {
         ApplymentGetSignStateRespData data = loansBizService.applymentGetSignState(orderNumber);
         return R.ok().data(data);
     }
 
-    @GetMapping(value = "/applymentQueryOrder")
+    @GetMapping(value = "/applyment/queryOrder")
     public R applymentQueryOrder(String orderNumber) {
         ApplymentQueryOrderRespData data = loansBizService.applymentQueryOrder(orderNumber);
         return R.ok().data(data);
     }
 
-    @GetMapping(value = "/applymentQueryPlans")
+    @GetMapping(value = "/applyment/queryPlans")
     public R applymentQueryPlans(String orderNumber) {
         ApplymentQueryPlansRespData data = loansBizService.applymentQueryPlans(orderNumber);
         return R.ok().data(data);
     }
 
-    @PostMapping(value = "/esignSigncontract")
+    @PostMapping(value = "/esign/signcontract")
     public R esignSigncontract(String orderNumber, String noticeType) {
         EsignSigncontractRespData data = loansBizService.esignSigncontract(orderNumber, noticeType);
         return R.ok().data(data);
     }
 
-    @GetMapping(value = "/esignMycontract")
+    @GetMapping(value = "/esign/mycontract")
     public R esignMycontract(String orderNumber) {
         EsignMycontractRespData data = loansBizService.esignMycontract(orderNumber);
         return R.ok().data(data);
     }
 
-    @GetMapping(value = "/esignGetSignUrl")
+    @GetMapping(value = "/esign/getSignUrl")
     public R esignGetSignUrl(String orderNumber, Integer signType) {
         EsignGetSignUrlRespData data = loansBizService.esignGetSignUrl(orderNumber, signType);
         return R.ok().data(data);
     }
 
-    @GetMapping(value = "/payGetbanklist")
+    @GetMapping(value = "/pay/getbanklist")
     public R payGetbanklist() {
         List<PayGetBanklistItem> itemList = loansBizService.payGetbanklist();
         return R.ok().data(itemList);
     }
 
-    @PostMapping(value = "/payPretiedcard")
+    @PostMapping(value = "/pay/pretiedcard")
     public R payPretiedcard(@RequestBody @Valid PayPretiedcardReq req) {
         loansBizService.payPretiedcard(req);
         return R.ok();
     }
 
-    @PostMapping(value = "/payConfirmbindcard")
+    @PostMapping(value = "/pay/confirmbindcard")
     public R payConfirmbindcard(@RequestBody @Valid PayConfirmbindcardReq req) {
         loansBizService.payConfirmbindcard(req);
         return R.ok();
     }
 
-    @GetMapping(value = "/payGetPayInfo")
+    @GetMapping(value = "/pay/getPayInfo")
     public R payGetPayInfo(String orderNumber, String repayType) {
         PayGetPayInfoRespData data = loansBizService.payGetPayInfo(orderNumber, repayType);
         return R.ok().data(data);
     }
 
-    @GetMapping(value = "/payQuerywithhold")
+    @GetMapping(value = "/pay/querywithhold")
     public R payQuerywithhold(String tradeNumber) {
         PayQueryWithholdResp resp = loansBizService.payQuerywithhold(tradeNumber);
         return R.ok().data(resp.getMsg());

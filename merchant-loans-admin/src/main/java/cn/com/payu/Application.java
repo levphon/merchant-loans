@@ -17,7 +17,6 @@ import static java.util.TimeZone.getTimeZone;
  * @author payu
  */
 @EnableRestAdmin
-//@MapperScan("cn.com.payu.vasp.modules.mapper")//如果glsx-rest-system目录结构和glsx-rest-admin一样，这个注解可以省略
 @EnableTransactionManagement
 @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)
 @SpringBootApplication

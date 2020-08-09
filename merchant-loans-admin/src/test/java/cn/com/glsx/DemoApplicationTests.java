@@ -313,7 +313,7 @@ public class DemoApplicationTests {
         job.setBusinessType(1);
         job.setCompanyName("杜拉拉");
         job.setOperateTime(System.currentTimeMillis());
-        job.setIndustryCode(21);
+        job.setIndustryCode(String.valueOf(21));
         job.setContactNumber("0755-6546562");
         job.setMonthTurnover(new BigDecimal("6596536"));
         job.setOperateAddress("广东深圳南山智园");

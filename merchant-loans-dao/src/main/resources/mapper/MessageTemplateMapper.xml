@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.payu.modules.mapper.MessageTemplateMapper">
+  <resultMap id="BaseResultMap" type="cn.com.payu.modules.entity.MessageTemplate">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="template" jdbcType="VARCHAR" property="template" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="enable_status" jdbcType="INTEGER" property="enableStatus" />
+    <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="created_by" jdbcType="INTEGER" property="createdBy" />
+    <result column="updated_date" jdbcType="TIMESTAMP" property="updatedDate" />
+    <result column="updated_by" jdbcType="INTEGER" property="updatedBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    id, `template`, subject, content, `type`, enable_status, del_flag, created_date, 
+    created_by, updated_date, updated_by
+  </sql>
+    <select id="findByKey" resultType="cn.com.payu.modules.entity.MessageTemplate">
+      select
+      <include refid="Base_Column_List"/>
+      from d_message_template
+      where template = #{template}
+    </select>
+</mapper>

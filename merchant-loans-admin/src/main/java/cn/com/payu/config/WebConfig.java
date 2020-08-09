@@ -92,7 +92,9 @@ public class WebConfig implements WebMvcConfigurer {
         //3.所有的preHandle 执行完再执行全部postHandle 最后是postHandle
         registry.addInterceptor(visitInterceptor).addPathPatterns("/**")
                 .excludePathPatterns("/")
-                .excludePathPatterns("/login");
+                .excludePathPatterns("/captcha")
+                .excludePathPatterns("/login")
+                .excludePathPatterns("/customer/login");
         registry.addInterceptor(logInterceptor).addPathPatterns("/**");
     }
 

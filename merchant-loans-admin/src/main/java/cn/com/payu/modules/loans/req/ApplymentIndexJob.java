@@ -25,7 +25,7 @@ public class ApplymentIndexJob {
     /**
      * 行业类别的编码
      */
-    private Integer industryCode;
+    private String industryCode;
 
     /**
      * 公司电话

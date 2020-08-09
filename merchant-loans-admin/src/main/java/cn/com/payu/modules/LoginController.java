@@ -1,7 +1,11 @@
 package cn.com.payu.modules;
 
 import cn.com.payu.common.enmus.ResultCodeEnum;
+import cn.com.payu.modules.customer.model.LoginByMobileDTO;
+import cn.com.payu.modules.customer.service.CustomerService;
+import cn.com.payu.modules.entity.Customer;
 import cn.com.payu.modules.entity.User;
+import cn.com.payu.modules.user.model.LoginDTO;
 import cn.com.payu.modules.user.service.UserService;
 import com.glsx.plat.common.annotation.NoLogin;
 import com.glsx.plat.common.annotation.SysLog;
@@ -12,10 +16,7 @@ import com.glsx.plat.exception.BusinessException;
 import com.google.code.kaptcha.Producer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -34,14 +35,16 @@ import java.util.Map;
 @RestController
 public class LoginController {
 
-    @Resource
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private CustomerService customerService;
 
     @Autowired
     private Producer producer;
 
-    @NoLogin
-    @GetMapping("captcha")
+    @GetMapping("/captcha")
     public void captcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setHeader("Cache-Control", "no-store, no-cache");
         response.setContentType("image/jpeg");
@@ -62,15 +65,15 @@ public class LoginController {
     /**
      * 后端管理登录
      */
-    @SysLog
     @PostMapping(value = "/login")
-    public R login(@RequestParam String username, @RequestParam String password, String captcha) {
+    public R adminLogin(@RequestBody LoginDTO loginDTO) {
 
-        User user = userService.findByUsername(username);
+        User user = userService.findByUsername(loginDTO.getUsername());
+
+        if (user == null)
+            throw BusinessException.create(ResultCodeEnum.UNKNOWN_ACCOUNT.getCode(), ResultCodeEnum.UNKNOWN_ACCOUNT.getMsg());
 
         // TODO: 2020/8/7 密码校验
-
-
         String token = userService.createToken(user);
 
         Map<String, Object> rtnMap = new HashMap<>();
@@ -99,21 +102,20 @@ public class LoginController {
     /**
      * h5登录
      */
-    @SysLog
     @PostMapping(value = "/customer/login")
-    public R login(@RequestParam String phone, @RequestParam String code) {
+    public R customerLogin(@RequestBody LoginByMobileDTO loginDTO) {
 
-        User user = userService.findByPhone(phone);
-        user.setPhone(phone);
+        Customer customer = customerService.findByPhone(loginDTO.getPhone());
+
+        if (customer == null)
+            throw BusinessException.create(ResultCodeEnum.UNKNOWN_ACCOUNT.getCode(), ResultCodeEnum.UNKNOWN_ACCOUNT.getMsg());
 
         // TODO: 2020/8/7 验证码校验
+//        loginDTO.getCode();
 
-        String token = userService.createToken(user);
+        String token = customerService.createToken(customer);
 
-        Map<String, Object> rtnMap = new HashMap<>();
-        rtnMap.put("token", token);
-        rtnMap.put("user", user);
-        return R.ok().data(rtnMap);
+        return R.ok().data(token);
     }
 
 }

@@ -1,5 +1,7 @@
 package cn.com.payu.modules.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
@@ -17,11 +19,13 @@ public class User implements Serializable {
     /**
      * 密码
      */
+    @JsonIgnore
     private String password;
 
     /**
      * 加密盐
      */
+    @JsonIgnore
     private String salt;
 
     /**
