@@ -13,6 +13,7 @@
         <result column="loan_period" jdbcType="INTEGER" property="loanPeriod"/>
         <result column="merchant_rate" jdbcType="REAL" property="merchantRate"/>
         <result column="pay_method" jdbcType="INTEGER" property="payMethod"/>
+        <result column="loan_status" jdbcType="INTEGER" property="loanStatus"/>
         <result column="enable_status" jdbcType="INTEGER" property="enableStatus"/>
         <result column="del_flag" jdbcType="INTEGER" property="delFlag"/>
         <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
@@ -25,7 +26,7 @@
           WARNING - @mbg.generated
         -->
         id, order_number, product_id, annuity, loan_purpose, loan_period, merchant_rate,
-        pay_method, enable_status, del_flag, created_date, created_by, updated_date, updated_by
+        pay_method, loan_status, enable_status, del_flag, created_date, created_by, updated_date, updated_by
     </sql>
     <select id="selectByOrderNumber" parameterType="java.lang.String" resultType="cn.com.payu.modules.entity.Loan">
         select

@@ -8,7 +8,10 @@ import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.loans.service.LoansBizService;
 import com.glsx.plat.core.web.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -91,8 +94,8 @@ public class LoansController {
 
     @PostMapping(value = "/applyment/index")
     public R applymentIndex(@RequestBody @Valid ApplymentIndexReq req) {
-        loansBizService.applymentIndex(req);
-        return R.ok();
+        String orderNumber = loansBizService.applymentIndex(req);
+        return R.ok().data(orderNumber);
     }
 
     @PostMapping(value = "/applyment/reject")

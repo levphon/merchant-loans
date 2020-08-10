@@ -26,9 +26,9 @@ public class BaseApiController {
     protected void verifySign(AbstractApiCallbackReq req, String localSecret, String localSalt) {
         Map<String, String> params = SignUtils.getSignTreeMap(req);
         String sign = params.remove(SignUtils.SIGN);
-        String paramsJson = SignUtils.getSignTreeJson(req);
-        String localSign = SignUtils.sign(localSecret, paramsJson, localSalt);
+        String paramsJson = SignUtils.getSignTreeJson(params);
         log.info("参与签名参数：" + paramsJson);
+        String localSign = SignUtils.sign(localSecret, paramsJson, localSalt);
         log.info("调用方生成的签名为：" + sign);
         log.info("系统方生成的签名为：" + localSign);
         if (!localSign.equalsIgnoreCase(sign)) {

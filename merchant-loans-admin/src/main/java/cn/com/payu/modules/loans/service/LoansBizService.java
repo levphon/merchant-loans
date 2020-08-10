@@ -1,13 +1,18 @@
 package cn.com.payu.modules.loans.service;
 
-import cn.com.payu.modules.entity.Loan;
+import cn.com.payu.common.enmus.CallbackType;
+import cn.com.payu.common.enmus.LoanStatus;
+import cn.com.payu.modules.entity.*;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
-import cn.com.payu.modules.mapper.LoanMapper;
+import cn.com.payu.modules.mapper.*;
+import com.glsx.plat.redis.service.GainIdService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,10 +27,92 @@ public class LoansBizService {
     private LoansApiService loansApiService;
 
     @Autowired
-    private LoanMapper loanMapper;
+    private GainIdService gainIdService;
 
-    public void applymentIndex(ApplymentIndexReq req) {
+    @Autowired
+    private LoanMapper loanMapper;
+    @Autowired
+    private LoanAddressMapper loanAddressMapper;
+    @Autowired
+    private LoanContactMapper loanContactMapper;
+    @Autowired
+    private LoanDocumentMapper loanDocumentMapper;
+    @Autowired
+    private LoanIncomeMapper loanIncomeMapper;
+    @Autowired
+    private LoanJobMapper loanJobMapper;
+    @Autowired
+    private LoanPersonalMapper loanPersonalMapper;
+    @Autowired
+    private LoanPlansMapper loanPlansMapper;
+
+    public String applymentIndex(ApplymentIndexReq req) {
+
+        String orderNumber = gainIdService.gainId("B");
+
+        req.setOrderNumber(orderNumber);
+
+        //执行进件
         ApplymentIndexResp resp = loansApiService.applymentIndex(req);
+
+        ApplymentIndexLoan indexLoan = req.getLoanData();
+        ApplymentIndexPersonal personal = req.getPersonalData();
+        ApplymentIndexAddress address = req.getAddressData();
+        List<ApplymentIndexContact> contactData = req.getContactData();
+        ApplymentIndexJob job = req.getJobData();
+        ApplymentIndexIncome income = req.getIncomeData();
+        ApplymentIndexDocument document = req.getDocumentData();
+
+        // 2020/8/10 入库
+        Loan loan = new Loan();
+        LoanPersonal loanPersonal = new LoanPersonal();
+        LoanAddress loanAddress = new LoanAddress();
+        LoanJob loanJob = new LoanJob();
+        LoanDocument loanDocument = new LoanDocument();
+        List<LoanIncome> loanIncomeList = new ArrayList<>();
+        List<LoanContact> loanContactList = new ArrayList<>();
+
+        BeanUtils.copyProperties(indexLoan, loan);
+        BeanUtils.copyProperties(personal, loanPersonal);
+        BeanUtils.copyProperties(address, loanAddress);
+        BeanUtils.copyProperties(job, loanJob);
+
+        loan.setOrderNumber(orderNumber);
+        loan.setLoanStatus(LoanStatus.INIT.getCode());
+        loanMapper.insertUseGeneratedKeys(loan);
+
+        loanPersonal.setLoanId(loan.getId());
+        loanAddress.setLoanId(loan.getId());
+        loanJob.setLoanId(loan.getId());
+        loanDocument.setLoanId(loan.getId());
+
+        if (income.getPrivateIncome() != null) {
+            LoanIncome loanIncome = new LoanIncome();
+            BeanUtils.copyProperties(income.getPrivateIncome(), loanIncome);
+            loanIncome.setLoanId(loan.getId());
+            loanIncomeList.add(loanIncome);
+        }
+        if (income.getPublicIncome() != null) {
+            LoanIncome loanIncome = new LoanIncome();
+            BeanUtils.copyProperties(income.getPublicIncome(), loanIncome);
+            loanIncome.setLoanId(loan.getId());
+            loanIncomeList.add(loanIncome);
+        }
+        BeanUtils.copyProperties(document, loanDocument);
+        for (ApplymentIndexContact indexContact : contactData) {
+            LoanContact loanContact = new LoanContact();
+            BeanUtils.copyProperties(indexContact, loanContact);
+            loanContact.setLoanId(loan.getId());
+            loanContactList.add(loanContact);
+        }
+        loanPersonalMapper.insert(loanPersonal);
+        loanAddressMapper.insert(loanAddress);
+        loanJobMapper.insert(loanJob);
+        loanDocumentMapper.insert(loanDocument);
+        loanIncomeMapper.insertList(loanIncomeList);
+        loanContactMapper.insertList(loanContactList);
+
+        return orderNumber;
     }
 
     public void applymentReject(ApplymentRejectReq req) {
@@ -59,23 +146,10 @@ public class LoansBizService {
     }
 
     public void payPretiedcard(PayPretiedcardReq req) {
-        req.setAccountName("薛倩");
-        req.setAccountNo("6228480215110121391");
-        req.setIdcardNo("450681199904105960");
-        req.setMobile("13475804735");
-        req.setOrderNumber("B34938953898539");
         PayPretiedcardResp resp = loansApiService.payPretiedcard(req);
     }
 
     public void payConfirmbindcard(PayConfirmbindcardReq req) {
-        req.setAccountNo("");
-        req.setAccountName("");
-        req.setIdcardNo("");
-        req.setBranchName("");
-        req.setMobile("");
-        req.setUniqueCode("");
-        req.setSmsCode("");
-        req.setOrderNumber("");
         PayConfirmbindcardResp resp = loansApiService.payConfirmbindcard(req);
     }
 
@@ -173,38 +247,75 @@ public class LoansBizService {
 
         Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
 
-        if (loan == null) return 1;
+        if (loan == null) {
+            log.warn("进件订单{}不存在", req.getOrderNumber());
+            return 1;
+        }
 
-//        loan.setLoanStatus();
+        if (CallbackType.APPLY_DATA_CHECK.getCode().equals(req.getCallbackType())) {
+
+        } else if (CallbackType.APPLY_SUCCESS.getCode().equals(req.getCallbackType())) {
+            loan.setLoanStatus(LoanStatus.RC_FIRST_TRIAL.getCode());
+        } else if (CallbackType.RC_PASS.getCode().equals(req.getCallbackType())) {
+            if (LoanStatus.RC_FIRST_TRIAL.getCode().equals(loan.getLoanStatus())) {//初审通过
+                loan.setLoanStatus(LoanStatus.RC_RETRIAL.getCode());
+            } else {//复审通过
+                loan.setLoanStatus(LoanStatus.WAITING_SIGN.getCode());
+            }
+        } else if (CallbackType.RC_REFUSE.getCode().equals(req.getCallbackType())) {
+
+        } else if (CallbackType.SIGNED.getCode().equals(req.getCallbackType())) {
+            loan.setLoanStatus(LoanStatus.WAITING_LOAN.getCode());
+        } else if (CallbackType.LOANED.getCode().equals(req.getCallbackType())) {
+            // 查询并生成还款计划
+            generatePlans(loan.getId(), req.getApplyNumber());
+
+            loan.setLoanStatus(LoanStatus.REPAYING.getCode());
+        } else if (CallbackType.SETTLED.getCode().equals(req.getCallbackType())) {
+            loan.setLoanStatus(LoanStatus.SETTLED.getCode());
+        } else if (CallbackType.REFUSE_LOAN.getCode().equals(req.getCallbackType())) {
+            loan.setLoanStatus(LoanStatus.REFUSE_LOAN.getCode());
+        }
 
         loanMapper.updateByPrimaryKey(loan);
 
         return 0;
     }
 
-    public int applymentApprovalCallback(ApplymentApprovalCallbackReq req) {
+    /**
+     * 生成还款计划表
+     *
+     * @param id
+     * @param orderNumber
+     */
+    public void generatePlans(Long id, String orderNumber) {
+        ApplymentQueryPlansRespData data = this.applymentQueryPlans(orderNumber);
+        List<ApplymentQueryPlansItem> planList = data.getPlanList();
 
-        Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
-
-        if (loan == null) return 1;
-
-//        loan.setLoanStatus();
-
-        loanMapper.updateByPrimaryKey(loan);
-
-        return 0;
+        List<LoanPlans> loanPlans = new ArrayList<>();
+        for (ApplymentQueryPlansItem item : planList) {
+            LoanPlans plans = new LoanPlans();
+            BeanUtils.copyProperties(item, plans);
+            plans.setLoanId(id);
+            plans.setOuterId(item.getId());
+            loanPlans.add(plans);
+        }
+        loanPlansMapper.insertList(loanPlans);
     }
 
     public int payWithholdCallback(PayWithholdCallbackReq req) {
 
         Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
 
-        if (loan == null) return 1;
+        if (loan == null) {
+            log.warn("进件订单{}不存在", req.getOrderNumber());
+            return 1;
+        }
 
-//        loan.setLoanStatus();
+        if (CallbackType.VOLUNTARY_REPAYMENT.getCode().equals(req.getCallbackType())) {
+            // TODO: 2020/8/10 修改还款计划还款状态
 
-        loanMapper.updateByPrimaryKey(loan);
-
+        }
         return 0;
     }
 

@@ -2,8 +2,6 @@ package cn.com.payu.modules.loans.req;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 public class ApplymentIndexLoan {
 
@@ -15,7 +13,7 @@ public class ApplymentIndexLoan {
     /**
      * 客户贷款金额(单位：元)
      */
-    private BigDecimal annuity;
+    private Integer annuity;
 
     /**
      * 客户贷款用途，详见字典说明

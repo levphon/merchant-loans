@@ -1,10 +1,14 @@
 package cn.com.glsx;
 
 import cn.com.payu.Application;
+import cn.com.payu.modules.loans.LoansConfig;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.loans.service.LoansApiService;
+import cn.com.payu.modules.loans.service.LoansBizService;
+import com.alibaba.fastjson.JSON;
 import com.glsx.plat.redis.service.GainIdService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +19,19 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DemoApplicationTests {
 
     @Autowired
     private LoansApiService loansApiService;
+
+    @Autowired
+    private LoansConfig loansConfig;
+
+    @Autowired
+    private LoansBizService loansBizService;
 
     @Autowired
     private GainIdService gainIdService;
@@ -372,7 +383,7 @@ public class DemoApplicationTests {
 
         ApplymentIndexLoan loan = new ApplymentIndexLoan();
         loan.setProductId(13);
-        loan.setAnnuity(new BigDecimal(24000));
+        loan.setAnnuity(24000);
         loan.setLoanPurpose(4);
         loan.setLoanPeriod(12);
         loan.setMerchantRate(3.8F);
@@ -394,7 +405,7 @@ public class DemoApplicationTests {
     @Test
     public void test13() {
         ApplymentGetSignStateReq req = new ApplymentGetSignStateReq();
-        req.setOrderNumber("B20200807235013000011");
+        req.setOrderNumber("B20200810165759000022");
         ApplymentGetSignStateResp resp = loansApiService.applymentGetSignState(req);
         System.out.println(resp);
     }
@@ -408,7 +419,7 @@ public class DemoApplicationTests {
     @Test
     public void test14() {
         ApplymentQueryOrderReq req = new ApplymentQueryOrderReq();
-        req.setOrderNumber("B20200807154725000003");
+        req.setOrderNumber("B20200810165759000022");
         ApplymentQueryOrderResp resp = loansApiService.applymentQueryOrder(req);
         System.out.println(resp);
     }
@@ -416,7 +427,7 @@ public class DemoApplicationTests {
     @Test
     public void test15() {
         ApplymentQueryPlansReq req = new ApplymentQueryPlansReq();
-        req.setOrderNumber("B20200807154725000003");
+        req.setOrderNumber("B20200810165759000022");
         ApplymentQueryPlansResp resp = loansApiService.applymentQueryplans(req);
         System.out.println(resp);
     }
@@ -456,13 +467,24 @@ public class DemoApplicationTests {
         req.setIdcardNo("450681199904105960");
         req.setMobile("13475804735");
         req.setOrderNumber("B34938953898539");
+        log.info("请求参数: {}", JSON.toJSONString(req, true));
         PayPretiedcardResp resp = loansApiService.payPretiedcard(new PayPretiedcardReq());
         System.out.println(resp);
     }
 
     @Test
     public void test21() {
-        PayConfirmbindcardResp resp = loansApiService.payConfirmbindcard(new PayConfirmbindcardReq());
+        PayConfirmbindcardReq req = new PayConfirmbindcardReq();
+        req.setAccountNo("6228480215110121391");
+        req.setAccountName("薛倩");
+        req.setIdcardNo("450681199904105960");
+        req.setBranchName("aaa");
+        req.setMobile("13475804735");
+        req.setUniqueCode("aaa");
+        req.setSmsCode("654465");
+        req.setOrderNumber("B34938953898539");
+        log.info("请求参数: {}", JSON.toJSONString(req, true));
+        PayConfirmbindcardResp resp = loansApiService.payConfirmbindcard(req);
         System.out.println(resp);
     }
 
@@ -480,6 +502,39 @@ public class DemoApplicationTests {
 
     @Test
     public void test24() {
+        ApplymentIndexCallbackReq req = new ApplymentIndexCallbackReq();
+        req.setCallbackNumber("983958384385335");
+        req.setCallbackType(1);
+        req.setOrderNumber("B20200807175339000010");
+        req.setApplyNumber("989839859839853");
+        req.setDescription("this is a desc");
+        req.setReason("this is a reason");
+        req.setSign("sign");
+        log.info("请求参数: {}", JSON.toJSONString(req, true));
+        int rtnCode = loansBizService.applymentIndexCallback(req);
+        System.out.println(rtnCode);
+    }
+
+    @Test
+    public void test26() {
+        PayWithholdCallbackReq req = new PayWithholdCallbackReq();
+        req.setCallbackNumber("0294839583953");
+        req.setCallbackType(1);
+        req.setOrderNumber("8785938598353");
+        req.setApplyNumber("B20200807175339000010");
+        req.setPeriodOrder(1);
+        req.setIsFinish(false);
+        req.setDescription("this is a desc");
+        req.setReason("this is a reason");
+        req.setSign("sign");
+        log.info("请求参数: {}", JSON.toJSONString(req, true));
+        int rtnCode = loansBizService.payWithholdCallback(req);
+        System.out.println(rtnCode);
+    }
+
+
+    @Test
+    public void testIds() {
         String s1 = gainIdService.gainId("B");
         String s2 = gainIdService.globalUniqueId("B");
         System.out.println(s1);
