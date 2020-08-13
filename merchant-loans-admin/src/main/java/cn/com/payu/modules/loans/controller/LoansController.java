@@ -1,11 +1,9 @@
 package cn.com.payu.modules.loans.controller;
 
-import cn.com.payu.modules.loans.req.ApplymentIndexReq;
-import cn.com.payu.modules.loans.req.ApplymentRejectReq;
-import cn.com.payu.modules.loans.req.PayConfirmbindcardReq;
-import cn.com.payu.modules.loans.req.PayPretiedcardReq;
+import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.loans.service.LoansBizService;
+import com.glsx.plat.common.annotation.SysLog;
 import com.glsx.plat.core.web.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,63 +25,54 @@ public class LoansController {
     public R basicsGetLoansProducts() {
         List<BasicsGetLoansProductsItem> itemList = loansBizService.basicsGetLoansProducts();
         return R.ok().data(itemList);
-
     }
 
     @GetMapping("/basics/getLoansPeriods")
     public R basicsGetLoansPeriods() {
         Map<String, String> map = loansBizService.basicsGetLoansPeriods();
         return R.ok().data(map);
-
     }
 
     @GetMapping("/basics/getHousingTypes")
     public R basicsGethousingTypes() {
         Map<String, String> map = loansBizService.basicsGetHousingTypes();
         return R.ok().data(map);
-
     }
 
     @GetMapping("/basics/getTogetherDwellList")
     public R basicsGetTogetherDwellList() {
         Map<String, String> map = loansBizService.basicsGetTogetherDwellList();
         return R.ok().data(map);
-
     }
 
     @GetMapping("/basics/getRelationTypelList")
     public R basicsGetRelationTypelList() {
         Map<String, String> map = loansBizService.basicsGetRelationTypelList();
         return R.ok().data(map);
-
     }
 
     @GetMapping("/basics/getLoanPurposeList")
     public R basicsGetLoanPurposeList() {
         Map<String, String> map = loansBizService.basicsGetLoanPurposeList();
         return R.ok().data(map);
-
     }
 
     @GetMapping("/basics/getEducationList")
     public R basicsGetEducationList() {
         Map<String, String> map = loansBizService.basicsGetEducationList();
         return R.ok().data(map);
-
     }
 
     @GetMapping("/basics/getMarriageList")
     public R basicsGetMarriageList() {
         Map<String, String> map = loansBizService.basicsGetMarriageList();
         return R.ok().data(map);
-
     }
 
     @GetMapping("/basics/getUnitTypeList")
     public R basicsGetUnitTypeList() {
         Map<String, String> map = loansBizService.basicsGetUnitTypeList();
         return R.ok().data(map);
-
     }
 
     @GetMapping("/basics/getIndustryTypeList")
@@ -92,12 +81,14 @@ public class LoansController {
         return R.ok().data(itemList);
     }
 
+    @SysLog
     @PostMapping(value = "/applyment/index")
     public R applymentIndex(@RequestBody @Valid ApplymentIndexReq req) {
         String orderNumber = loansBizService.applymentIndex(req);
         return R.ok().data(orderNumber);
     }
 
+    @SysLog
     @PostMapping(value = "/applyment/reject")
     public R applymentReject(@RequestBody @Valid ApplymentRejectReq req) {
         loansBizService.applymentReject(req);
@@ -123,8 +114,8 @@ public class LoansController {
     }
 
     @PostMapping(value = "/esign/signcontract")
-    public R esignSigncontract(String orderNumber, String noticeType) {
-        EsignSigncontractRespData data = loansBizService.esignSigncontract(orderNumber, noticeType);
+    public R esignSigncontract(@RequestBody @Valid EsignSigncontractReq req) {
+        EsignSigncontractRespData data = loansBizService.esignSigncontract(req.getOrderNumber(), req.getNoticeType());
         return R.ok().data(data);
     }
 
@@ -146,12 +137,14 @@ public class LoansController {
         return R.ok().data(itemList);
     }
 
+    @SysLog
     @PostMapping(value = "/pay/pretiedcard")
     public R payPretiedcard(@RequestBody @Valid PayPretiedcardReq req) {
         loansBizService.payPretiedcard(req);
         return R.ok();
     }
 
+    @SysLog
     @PostMapping(value = "/pay/confirmbindcard")
     public R payConfirmbindcard(@RequestBody @Valid PayConfirmbindcardReq req) {
         loansBizService.payConfirmbindcard(req);

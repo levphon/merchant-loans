@@ -1,11 +1,18 @@
 package cn.com.payu.modules.loans.req;
 
+import com.google.gson.annotations.Expose;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class ApplymentIndexReq extends AbstractApiReq {
+
+    /**
+     * 业务员
+     */
+    @Expose
+    private String salesman;
 
     /**
      * 商户订单号

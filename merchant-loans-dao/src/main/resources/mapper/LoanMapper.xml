@@ -7,6 +7,7 @@
         -->
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="order_number" jdbcType="VARCHAR" property="orderNumber"/>
+        <result column="apply_number" jdbcType="VARCHAR" property="applyNumber"/>
         <result column="product_id" jdbcType="INTEGER" property="productId"/>
         <result column="annuity" jdbcType="INTEGER" property="annuity"/>
         <result column="loan_purpose" jdbcType="INTEGER" property="loanPurpose"/>
@@ -25,7 +26,7 @@
         <!--
           WARNING - @mbg.generated
         -->
-        id, order_number, product_id, annuity, loan_purpose, loan_period, merchant_rate,
+        id, order_number, apply_number, product_id, annuity, loan_purpose, loan_period, merchant_rate,
         pay_method, loan_status, enable_status, del_flag, created_date, created_by, updated_date, updated_by
     </sql>
     <select id="selectByOrderNumber" parameterType="java.lang.String" resultType="cn.com.payu.modules.entity.Loan">
@@ -33,5 +34,49 @@
         <include refid="Base_Column_List"/>
         from d_loan
         where order_number = #{orderNumber}
+    </select>
+
+    <select id="selectByApplyNumber" parameterType="java.lang.String" resultType="cn.com.payu.modules.entity.Loan">
+        select
+        <include refid="Base_Column_List"/>
+        from d_loan
+        where apply_number = #{applyNumber}
+    </select>
+
+    <select id="search" resultType="cn.com.payu.modules.model.OrderModel">
+        select dl.id,dl.order_number orderNumber,dlp.name,dlp.phone_number phoneNumber,
+        dl.annuity,dl.loan_status loanStatus,dcb.bind_status bindStatus,dl.created_date createdDate
+        from d_loan dl
+        left join d_loan_personal dlp on dl.id = dlp.loan_id
+        left join d_customer_bankcard dcb on dl.id = dcb.loan_id
+        where dl.del_flag = 0
+        <if test="orderNumber != null and orderNumber != ''">
+            and dl.order_number LIKE CONCAT('%',#{orderNumber},'%')
+        </if>
+        <if test="loanStatus != null and loanStatus != ''">
+            and dl.loan_status = #{loanStatus}
+        </if>
+        <if test="sDate != null and sDate != '' and eDate != null and eDate != ''">
+            and DATE_FORMAT(dl.created_date, '%Y-%m-%d') &gt;= #{sDate}
+            and DATE_FORMAT(dl.created_date, '%Y-%m-%d') &lt;= #{eDate}
+        </if>
+    </select>
+    <select id="export" resultType="cn.com.payu.modules.model.export.OrderExport">
+        select dl.id,dl.order_number orderNumber,dlp.name,dlp.phone_number phoneNumber,
+        dl.annuity,dl.loan_status loanStatus,dcb.bind_status bindStatus,dl.created_date createdDate
+        from d_loan dl
+        left join d_loan_personal dlp on dl.id = dlp.loan_id
+        left join d_customer_bankcard dcb on dl.id = dcb.loan_id
+        where 1=1
+        <if test="orderNumber != null and orderNumber != ''">
+            and dl.order_number LIKE CONCAT('%',#{orderNumber},'%')
+        </if>
+        <if test="loanStatus != null and loanStatus != ''">
+            and dl.loan_status = #{loanStatus}
+        </if>
+        <if test="sDate != null and sDate != '' and eDate != null and eDate != ''">
+            and DATE_FORMAT(dl.created_date, '%Y-%m-%d') &gt;= #{sDate}
+            and DATE_FORMAT(dl.created_date, '%Y-%m-%d') &lt;= #{eDate}
+        </if>
     </select>
 </mapper>

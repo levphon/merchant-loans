@@ -23,7 +23,7 @@ public class BaseApiController {
      * @param localSecret
      * @param localSalt
      */
-    protected void verifySign(AbstractApiCallbackReq req, String localSecret, String localSalt) {
+    protected void verifySignThrow(AbstractApiCallbackReq req, String localSecret, String localSalt) {
         Map<String, String> params = SignUtils.getSignTreeMap(req);
         String sign = params.remove(SignUtils.SIGN);
         String paramsJson = SignUtils.getSignTreeJson(params);
@@ -34,6 +34,24 @@ public class BaseApiController {
         if (!localSign.equalsIgnoreCase(sign)) {
             throw BusinessException.create(SystemMessage.SIGN_ERROR);
         }
+    }
+
+    /**
+     * 通用验证请求签名
+     *
+     * @param req
+     * @param localSecret
+     * @param localSalt
+     */
+    protected boolean verifySign(AbstractApiCallbackReq req, String localSecret, String localSalt) {
+        Map<String, String> params = SignUtils.getSignTreeMap(req);
+        String sign = params.remove(SignUtils.SIGN);
+        String paramsJson = SignUtils.getSignTreeJson(params);
+        log.info("参与签名参数：" + paramsJson);
+        String localSign = SignUtils.sign(localSecret, paramsJson, localSalt);
+        log.info("调用方生成的签名为：" + sign);
+        log.info("系统方生成的签名为：" + localSign);
+        return localSign.equalsIgnoreCase(sign);
     }
 
 }

@@ -510,28 +510,14 @@ public class DemoApplicationTests {
         req.setDescription("this is a desc");
         req.setReason("this is a reason");
         req.setSign("sign");
+
+//        req.setPeriodOrder(1);
+//        req.setIsFinish(false);
+
         log.info("请求参数: {}", JSON.toJSONString(req, true));
-        int rtnCode = loansBizService.applymentIndexCallback(req);
+        int rtnCode = loansBizService.applymentCallback(req);
         System.out.println(rtnCode);
     }
-
-    @Test
-    public void test26() {
-        PayWithholdCallbackReq req = new PayWithholdCallbackReq();
-        req.setCallbackNumber("0294839583953");
-        req.setCallbackType(1);
-        req.setOrderNumber("8785938598353");
-        req.setApplyNumber("B20200807175339000010");
-        req.setPeriodOrder(1);
-        req.setIsFinish(false);
-        req.setDescription("this is a desc");
-        req.setReason("this is a reason");
-        req.setSign("sign");
-        log.info("请求参数: {}", JSON.toJSONString(req, true));
-        int rtnCode = loansBizService.payWithholdCallback(req);
-        System.out.println(rtnCode);
-    }
-
 
     @Test
     public void testIds() {

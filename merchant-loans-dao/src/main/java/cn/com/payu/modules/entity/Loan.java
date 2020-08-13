@@ -21,6 +21,12 @@ public class Loan implements Serializable {
     private String orderNumber;
 
     /**
+     * 对方订单号
+     */
+    @Column(name = "apply_number")
+    private String applyNumber;
+
+    /**
      * 贷款产品id，我方提供
      */
     @Column(name = "product_id")

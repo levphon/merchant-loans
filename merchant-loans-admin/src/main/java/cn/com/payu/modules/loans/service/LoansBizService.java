@@ -243,7 +243,7 @@ public class LoansBizService {
         return resp.getData();
     }
 
-    public int applymentIndexCallback(ApplymentIndexCallbackReq req) {
+    public int applymentCallback(ApplymentIndexCallbackReq req) {
 
         Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
 
@@ -255,15 +255,20 @@ public class LoansBizService {
         if (CallbackType.APPLY_DATA_CHECK.getCode().equals(req.getCallbackType())) {
 
         } else if (CallbackType.APPLY_SUCCESS.getCode().equals(req.getCallbackType())) {
+            loan.setApplyNumber(req.getApplyNumber());
+            loan.setAnnuity(req.getAuditAmount());
+            loan.setLoanPeriod(req.getAuditPeriod());
             loan.setLoanStatus(LoanStatus.RC_FIRST_TRIAL.getCode());
-        } else if (CallbackType.RC_PASS.getCode().equals(req.getCallbackType())) {
-            if (LoanStatus.RC_FIRST_TRIAL.getCode().equals(loan.getLoanStatus())) {//初审通过
-                loan.setLoanStatus(LoanStatus.RC_RETRIAL.getCode());
-            } else {//复审通过
-                loan.setLoanStatus(LoanStatus.WAITING_SIGN.getCode());
-            }
-        } else if (CallbackType.RC_REFUSE.getCode().equals(req.getCallbackType())) {
+        } else if (CallbackType.RC_PASS.getCode().equals(req.getCallbackType())) {//对方初审通过不会回调，复审通过才会回调
+//            if (LoanStatus.RC_FIRST_TRIAL.getCode().equals(loan.getLoanStatus())) {//初审通过
+//                loan.setLoanStatus(LoanStatus.RC_RETRIAL.getCode());
+//            } else {//复审通过
+//                loan.setLoanStatus(LoanStatus.WAITING_SIGN.getCode());
+//            }
 
+            loan.setLoanStatus(LoanStatus.WAITING_SIGN.getCode());
+        } else if (CallbackType.RC_REFUSE.getCode().equals(req.getCallbackType())) {
+            loan.setLoanStatus(LoanStatus.UNPASS.getCode());
         } else if (CallbackType.SIGNED.getCode().equals(req.getCallbackType())) {
             loan.setLoanStatus(LoanStatus.WAITING_LOAN.getCode());
         } else if (CallbackType.LOANED.getCode().equals(req.getCallbackType())) {
@@ -275,9 +280,11 @@ public class LoansBizService {
             loan.setLoanStatus(LoanStatus.SETTLED.getCode());
         } else if (CallbackType.REFUSE_LOAN.getCode().equals(req.getCallbackType())) {
             loan.setLoanStatus(LoanStatus.REFUSE_LOAN.getCode());
+        } else if (CallbackType.VOLUNTARY_REPAYMENT.getCode().equals(req.getCallbackType())) {
+            // TODO: 2020/8/10 修改还款计划还款状态
         }
 
-        loanMapper.updateByPrimaryKey(loan);
+        loanMapper.updateByPrimaryKeySelective(loan);
 
         return 0;
     }
@@ -301,22 +308,6 @@ public class LoansBizService {
             loanPlans.add(plans);
         }
         loanPlansMapper.insertList(loanPlans);
-    }
-
-    public int payWithholdCallback(PayWithholdCallbackReq req) {
-
-        Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
-
-        if (loan == null) {
-            log.warn("进件订单{}不存在", req.getOrderNumber());
-            return 1;
-        }
-
-        if (CallbackType.VOLUNTARY_REPAYMENT.getCode().equals(req.getCallbackType())) {
-            // TODO: 2020/8/10 修改还款计划还款状态
-
-        }
-        return 0;
     }
 
 }

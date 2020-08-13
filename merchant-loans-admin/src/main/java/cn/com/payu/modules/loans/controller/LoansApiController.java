@@ -2,7 +2,6 @@ package cn.com.payu.modules.loans.controller;
 
 import cn.com.payu.modules.loans.LoansConfig;
 import cn.com.payu.modules.loans.req.ApplymentIndexCallbackReq;
-import cn.com.payu.modules.loans.req.PayWithholdCallbackReq;
 import cn.com.payu.modules.loans.service.LoansBizService;
 import com.glsx.plat.common.annotation.SysLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,24 +22,14 @@ public class LoansApiController extends BaseApiController {
     @Autowired
     private LoansBizService loansBizService;
 
-    @SysLog("进件及风控审核回调")
-    @PostMapping("/callback/applymentindex")
-    public String applymentIndexCallback(@RequestBody @Valid ApplymentIndexCallbackReq req) {
+    @SysLog("进件结果 风控审核 代扣还款等回调")
+    @PostMapping("/callback/applyment")
+    public String applymentCallback(@RequestBody @Valid ApplymentIndexCallbackReq req) {
 
-        verifySign(req, loansConfig.getSecret(), loansConfig.getSalt());
+//        boolean flag = verifySign(req, loansConfig.getSecret(), loansConfig.getSalt());
+//        if (!flag) return "fail";
 
-        int rtnCode = loansBizService.applymentIndexCallback(req);
-
-        return rtnCode == 0 ? "success" : "fail";
-    }
-
-    @SysLog("代扣还款的回调")
-    @PostMapping("/callback/paywithhold")
-    public String payWithholdCallback(@RequestBody @Valid PayWithholdCallbackReq req) {
-
-        verifySign(req, loansConfig.getSecret(), loansConfig.getSalt());
-
-        int rtnCode = loansBizService.payWithholdCallback(req);
+        int rtnCode = loansBizService.applymentCallback(req);
 
         return rtnCode == 0 ? "success" : "fail";
     }

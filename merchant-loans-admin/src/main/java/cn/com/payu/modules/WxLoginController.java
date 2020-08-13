@@ -58,6 +58,7 @@ public class WxLoginController extends WxMpUserController {
 
         Map<String, Object> rtnMap = new HashMap<>();
         rtnMap.put("token", token);
+        rtnMap.put("user", customer);
         return rtnMap;
     }
 

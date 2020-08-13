@@ -16,6 +16,7 @@ public abstract class AbstractApiCallbackReq {
     /**
      * 签名
      */
+    @NotBlank(message = "签名不能为空")
     private String sign;
 
     //业务流水号
