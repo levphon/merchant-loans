@@ -29,6 +29,11 @@ public class OrderExport {
     private Integer annuity;
 
     @ExcelIgnore
+    private Integer auditPeriod;
+    @ExcelIgnore
+    private Integer enableStatus;
+
+    @ExcelIgnore
     private Integer loanStatus;
 
     @ExcelProperty(value = "进件放款状态", index = 6)

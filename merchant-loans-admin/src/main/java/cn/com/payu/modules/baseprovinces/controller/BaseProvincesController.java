@@ -17,7 +17,7 @@ import java.util.List;
  * @date 2019-03-28 10:17:01
  */
 @RestController
-@RequestMapping("base/province")
+@RequestMapping("basics/province")
 public class BaseProvincesController {
 
     @Autowired

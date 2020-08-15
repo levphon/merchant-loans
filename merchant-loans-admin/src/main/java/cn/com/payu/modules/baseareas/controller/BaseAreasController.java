@@ -20,7 +20,7 @@ import java.util.Map;
  * @date 2019-04-03 11:33:49
  */
 @RestController
-@RequestMapping("base/area")
+@RequestMapping("basics/area")
 public class BaseAreasController {
 
     @Autowired
@@ -28,9 +28,7 @@ public class BaseAreasController {
 
     @RequestMapping("/list")
     public R list(@NotBlank(message = "城市编码不能为空") String cityCode) {
-        Map<String, String> params = new HashMap<>();
-        params.put("cityCode", cityCode);
-        List<BaseArea> list = baseAreasService.searchByCityCode(params);
+        List<BaseArea> list = baseAreasService.searchByCityCode(cityCode);
         return R.ok().data(list);
     }
 

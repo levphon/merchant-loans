@@ -109,7 +109,7 @@ public class LoansController {
 
     @GetMapping(value = "/applyment/queryPlans")
     public R applymentQueryPlans(String orderNumber) {
-        ApplymentQueryPlansRespData data = loansBizService.applymentQueryPlans(orderNumber);
+        List<ApplymentQueryPlansItem> data = loansBizService.applymentQueryPlans(orderNumber);
         return R.ok().data(data);
     }
 

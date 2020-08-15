@@ -28,11 +28,11 @@
         del_flag, created_date, created_by, updated_date, updated_by
     </sql>
 
-    <select id="selectByPhone" parameterType="java.lang.String" resultType="cn.com.payu.modules.entity.User">
+    <select id="selectByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
         select * from d_user where phone = #{phone}
     </select>
 
-    <select id="selectByUsername" parameterType="java.lang.String" resultType="cn.com.payu.modules.entity.User">
+    <select id="selectByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
         select * from d_user where username = #{username}
     </select>
 

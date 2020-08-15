@@ -6,11 +6,13 @@ import cn.com.payu.modules.entity.*;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.mapper.*;
+import com.glsx.plat.exception.BusinessException;
 import com.glsx.plat.redis.service.GainIdService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,8 @@ public class LoansBizService {
     private LoanPersonalMapper loanPersonalMapper;
     @Autowired
     private LoanPlansMapper loanPlansMapper;
+    @Autowired
+    private LoanBankcardMapper loanBankcardMapper;
 
     public String applymentIndex(ApplymentIndexReq req) {
 
@@ -116,7 +120,14 @@ public class LoansBizService {
     }
 
     public void applymentReject(ApplymentRejectReq req) {
+        Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
+
+        req.setOrderNumber(loan.getApplyNumber());
         ApplymentRejectResp resp = loansApiService.applymentReject(req);
+
+        loan.setLoanPeriod(req.getLoanPeriod());
+        loan.setAnnuity(req.getAnnuity());
+        loanMapper.updateByPrimaryKeySelective(loan);
     }
 
     public ApplymentGetSignStateRespData applymentGetSignState(String orderNumber) {
@@ -133,11 +144,16 @@ public class LoansBizService {
         return resp.getData();
     }
 
-    public ApplymentQueryPlansRespData applymentQueryPlans(String orderNumber) {
+    public List<ApplymentQueryPlansItem> applymentQueryPlans(String orderNumber) {
+        Loan loan = loanMapper.selectByOrderNumber(orderNumber);
+
         ApplymentQueryPlansReq req = new ApplymentQueryPlansReq();
-        req.setOrderNumber(orderNumber);
+        req.setOrderNumber(loan.getApplyNumber());
         ApplymentQueryPlansResp resp = loansApiService.applymentQueryplans(req);
-        return resp.getData();
+        if (!CollectionUtils.isEmpty(resp.getData().getPlanList())) {
+            return resp.getData().getPlanList().get(0);
+        }
+        return null;
     }
 
     public List<PayGetBanklistItem> payGetbanklist() {
@@ -146,11 +162,40 @@ public class LoansBizService {
     }
 
     public void payPretiedcard(PayPretiedcardReq req) {
+        Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
+
+        //2020/8/14 银行卡信息校验及入库
+//        LoanBankcard bankcard = loanBankcardMapper.selectBy4Element(req.getAccountName(), req.getIdcardNo(), req.getAccountNo(), req.getMobile());
+        LoanBankcard bankcard = loanBankcardMapper.selectByLoanId(loan.getId());
+        if (bankcard != null && 1 != bankcard.getBindStatus())
+            throw BusinessException.create("该银行卡已经绑卡，请勿重复绑卡！");
+
+        req.setOrderNumber(loan.getApplyNumber());
         PayPretiedcardResp resp = loansApiService.payPretiedcard(req);
+        PayPretiedcardRespData respData = resp.getData();
+
+        if (bankcard == null) bankcard = new LoanBankcard();
+        bankcard.setLoanId(loan.getId());
+        bankcard.setAccountName(req.getAccountName());
+        bankcard.setIdcardNo(req.getIdcardNo());
+        bankcard.setAccountNo(req.getAccountNo());
+        bankcard.setMobile(req.getMobile());
+        bankcard.setBindStatus(0);
+        bankcard.setUseStatus(0);
+        loanBankcardMapper.insert(bankcard);
     }
 
     public void payConfirmbindcard(PayConfirmbindcardReq req) {
+        Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
+        req.setOrderNumber(loan.getApplyNumber());
         PayConfirmbindcardResp resp = loansApiService.payConfirmbindcard(req);
+
+        //2020/8/14 银行卡信息更新：绑定状态、使用状态
+        LoanBankcard bankcard = loanBankcardMapper.selectByLoanId(loan.getId());
+        bankcard.setUniqueCode(req.getUniqueCode());
+        bankcard.setBindStatus(1);
+        bankcard.setUseStatus(1);
+        loanBankcardMapper.updateByPrimaryKeySelective(bankcard);
     }
 
     public PayQueryWithholdResp payQuerywithhold(String tradeNumber) {
@@ -169,16 +214,20 @@ public class LoansBizService {
     }
 
     public EsignSigncontractRespData esignSigncontract(String orderNumber, String noticeType) {
+        Loan loan = loanMapper.selectByOrderNumber(orderNumber);
+
         EsignSigncontractReq req = new EsignSigncontractReq();
-        req.setOrderNumber(orderNumber);
+        req.setOrderNumber(loan.getApplyNumber());
         req.setNoticeType(noticeType);
         EsignSigncontractResp resp = loansApiService.esignSigncontract(req);
         return resp.getData();
     }
 
     public EsignMycontractRespData esignMycontract(String orderNumber) {
+        Loan loan = loanMapper.selectByOrderNumber(orderNumber);
+
         EsignMycontractReq req = new EsignMycontractReq();
-        req.setOrderNumber(orderNumber);
+        req.setOrderNumber(loan.getApplyNumber());
         EsignMycontractResp resp = loansApiService.esignMycontract(req);
         return resp.getData();
     }
@@ -252,6 +301,7 @@ public class LoansBizService {
             return 1;
         }
 
+        log.warn("订单{}回调{}", req.getOrderNumber(), req.getDescription());
         if (CallbackType.APPLY_DATA_CHECK.getCode().equals(req.getCallbackType())) {
 
         } else if (CallbackType.APPLY_SUCCESS.getCode().equals(req.getCallbackType())) {
@@ -272,8 +322,13 @@ public class LoansBizService {
         } else if (CallbackType.SIGNED.getCode().equals(req.getCallbackType())) {
             loan.setLoanStatus(LoanStatus.WAITING_LOAN.getCode());
         } else if (CallbackType.LOANED.getCode().equals(req.getCallbackType())) {
+            if (LoanStatus.REPAYING.getCode().equals(loan.getLoanStatus())) {
+                log.warn("订单{}重复放款回调，忽略处理请求", req.getOrderNumber());
+                return 1;
+            }
+
             // 查询并生成还款计划
-            generatePlans(loan.getId(), req.getApplyNumber());
+            generatePlans(loan.getId(), req.getOrderNumber());
 
             loan.setLoanStatus(LoanStatus.REPAYING.getCode());
         } else if (CallbackType.SETTLED.getCode().equals(req.getCallbackType())) {
@@ -296,18 +351,18 @@ public class LoansBizService {
      * @param orderNumber
      */
     public void generatePlans(Long id, String orderNumber) {
-        ApplymentQueryPlansRespData data = this.applymentQueryPlans(orderNumber);
-        List<ApplymentQueryPlansItem> planList = data.getPlanList();
-
-        List<LoanPlans> loanPlans = new ArrayList<>();
-        for (ApplymentQueryPlansItem item : planList) {
-            LoanPlans plans = new LoanPlans();
-            BeanUtils.copyProperties(item, plans);
-            plans.setLoanId(id);
-            plans.setOuterId(item.getId());
-            loanPlans.add(plans);
+        List<ApplymentQueryPlansItem> planList = this.applymentQueryPlans(orderNumber);
+        if (!CollectionUtils.isEmpty(planList)) {
+            List<LoanPlans> loanPlans = new ArrayList<>();
+            for (ApplymentQueryPlansItem item : planList) {
+                LoanPlans plans = new LoanPlans();
+                BeanUtils.copyProperties(item, plans);
+                plans.setLoanId(id);
+                plans.setOuterId(item.getId());
+                loanPlans.add(plans);
+            }
+            loanPlansMapper.insertList(loanPlans);
         }
-        loanPlansMapper.insertList(loanPlans);
     }
 
 }

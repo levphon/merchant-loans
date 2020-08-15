@@ -1,14 +1,13 @@
 package cn.com.payu.modules;
 
 import cn.com.payu.common.enmus.ResultCodeEnum;
+import cn.com.payu.modules.common.service.CommonService;
 import cn.com.payu.modules.customer.model.LoginByMobileDTO;
 import cn.com.payu.modules.customer.service.CustomerService;
 import cn.com.payu.modules.entity.Customer;
 import cn.com.payu.modules.entity.User;
 import cn.com.payu.modules.user.model.LoginDTO;
 import cn.com.payu.modules.user.service.UserService;
-import com.glsx.plat.common.annotation.NoLogin;
-import com.glsx.plat.common.annotation.SysLog;
 import com.glsx.plat.common.utils.StringUtils;
 import com.glsx.plat.context.utils.PropertiesUtils;
 import com.glsx.plat.core.web.R;
@@ -16,9 +15,11 @@ import com.glsx.plat.exception.BusinessException;
 import com.google.code.kaptcha.Producer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,9 @@ import java.util.Map;
 @Slf4j
 @RestController
 public class LoginController {
+
+    @Autowired
+    private CommonService commonService;
 
     @Autowired
     private UserService userService;
@@ -74,6 +78,8 @@ public class LoginController {
             throw BusinessException.create(ResultCodeEnum.UNKNOWN_ACCOUNT.getCode(), ResultCodeEnum.UNKNOWN_ACCOUNT.getMsg());
 
         // TODO: 2020/8/7 密码校验
+
+
         String token = userService.createToken(user);
 
         Map<String, Object> rtnMap = new HashMap<>();
@@ -105,13 +111,12 @@ public class LoginController {
     @PostMapping(value = "/customer/login")
     public R customerLogin(@RequestBody LoginByMobileDTO loginDTO) {
 
+        commonService.verifyCode(loginDTO.getPhone(), loginDTO.getCode());
+
         Customer customer = customerService.findByPhone(loginDTO.getPhone());
 
         if (customer == null)
             throw BusinessException.create(ResultCodeEnum.UNKNOWN_ACCOUNT.getCode(), ResultCodeEnum.UNKNOWN_ACCOUNT.getMsg());
-
-        // TODO: 2020/8/7 验证码校验
-//        loginDTO.getCode();
 
         String token = customerService.createToken(customer);
 

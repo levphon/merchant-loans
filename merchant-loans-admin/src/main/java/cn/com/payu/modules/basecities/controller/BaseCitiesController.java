@@ -21,7 +21,7 @@ import java.util.Map;
  * @date 2019-03-28 13:49:24
  */
 @RestController
-@RequestMapping("base/city")
+@RequestMapping("basics/city")
 @Validated
 public class BaseCitiesController {
 
@@ -32,10 +32,8 @@ public class BaseCitiesController {
      * 根据条件查询
      */
     @RequestMapping("/list")
-    public R list(@NotBlank(message = "省份编码不能为空") String provinceCode) {
-        Map<String, String> params = new HashMap<>();
-        params.put("provinceCode", provinceCode);
-        List<BaseCity> list = baseCitiesService.list(params);
+    public R list(@NotBlank(message = "省份编码不能为空") String provCode) {
+        List<BaseCity> list = baseCitiesService.list(provCode);
         return R.ok().data(list);
     }
 

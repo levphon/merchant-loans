@@ -62,10 +62,8 @@ public class UserService {
 
         if (StringUtils.isNullOrEmpty(token)) throw new AdminException(SystemMessage.ILLEGAL_ACCESS.getCode(), "登录已失效");
 
-        if (token.startsWith("Bearer")) token = token.replace("Bearer ", "");
-
         //解析token，反转成JwtUser对象
-        Map<String, Object> userMap = jwtUtils.parseClaim(JwtUser.class, token);
+        Map<String, Object> userMap = jwtUtils.parseClaim(token, JwtUser.class);
         JwtUser jwtUser = null;
         try {
             jwtUser = (JwtUser) ObjectUtils.mapToObject(userMap, JwtUser.class);

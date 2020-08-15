@@ -24,14 +24,10 @@ public class BaseAreasService {
     @Autowired
     private RedisUtils redisUtils;
 
-    public List<BaseArea> searchByCityCode(Map<String, String> params) {
-        String cityCode = params.get("cityCode");
+    public List<BaseArea> searchByCityCode(String cityCode) {
         List<BaseArea> list = null;//redisUtils.getListByPrex(ConstantCacheKeys.REDIS_AREA_KEY + cityCode);
 //        Collections.sort(list, Comparator.comparing(BaseArea::getCode));
-
-        BaseArea area = new BaseArea();
-        area.setCityCode(cityCode);
-        if (CollectionUtils.isEmpty(list)) list = areaMapper.selectByExample(area);
+        if (CollectionUtils.isEmpty(list)) list = areaMapper.selectByCityCode(cityCode);
         return list;
     }
 

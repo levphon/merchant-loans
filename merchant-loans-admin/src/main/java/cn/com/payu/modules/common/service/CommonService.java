@@ -2,9 +2,11 @@ package cn.com.payu.modules.common.service;
 
 import cn.com.payu.common.constant.Constants;
 import cn.com.payu.common.constant.MessageTemplateKeys;
+import cn.com.payu.common.enmus.ResultCodeEnum;
 import com.glsx.plat.common.utils.SnowFlake;
 import com.glsx.plat.common.utils.StringUtils;
 import com.glsx.plat.context.utils.PropertiesUtils;
+import com.glsx.plat.exception.BusinessException;
 import com.glsx.plat.redis.utils.RedisUtils;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,11 @@ public class CommonService {
     @Resource
     private MessageService messageService;
 
+    /**
+     * 发送验证码
+     *
+     * @param phone
+     */
     public void sendCode(String phone) {
 
         String smsKey = Constants.SMS_VERIFY_CODE_PREFIX + phone;
@@ -45,6 +52,20 @@ public class CommonService {
             code = "1234";
         }
         redisUtils.set(smsKey, code, Constants.SMS_VERIFY_CODE_TIMEOUT);
+    }
+
+    /**
+     * 验证验证码
+     *
+     * @param phone
+     * @param code
+     */
+    public void verifyCode(String phone, String code) {
+        String realVerifyCode = (String) redisUtils.get(Constants.SMS_VERIFY_CODE_PREFIX + phone);
+        if (StringUtils.isBlank(realVerifyCode))
+            throw BusinessException.create(ResultCodeEnum.SMS_VERIFY_CODE_TIMEOUT.getMsg());
+        if (!realVerifyCode.equals(code))
+            throw BusinessException.create(ResultCodeEnum.SMS_VERIFY_CODE_NOT_RIGHT.getMsg());
     }
 
     public long snowFlakeId() {

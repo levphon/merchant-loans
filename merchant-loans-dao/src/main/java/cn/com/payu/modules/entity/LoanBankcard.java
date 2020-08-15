@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
-@Table(name = "d_customer_bankcard")
-public class CustomerBankcard implements Serializable {
+@Table(name = "d_loan_bankcard")
+public class LoanBankcard implements Serializable {
     @Id
     private Long id;
 

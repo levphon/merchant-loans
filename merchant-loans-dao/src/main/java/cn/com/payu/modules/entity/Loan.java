@@ -67,6 +67,18 @@ public class Loan implements Serializable {
     @Column(name = "loan_status")
     private Integer loanStatus;
 
+    /**
+     * 审批金额
+     */
+    @Column(name = "audit_amount")
+    private Integer auditAmount;
+
+    /**
+     * 审批期限
+     */
+    @Column(name = "audit_period")
+    private Integer auditPeriod;
+
     @Column(name = "enable_status")
     private Integer enableStatus;
 

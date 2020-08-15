@@ -17,7 +17,13 @@ public enum ResultCodeEnum {
     UNKNOWN_ACCOUNT(301, "此账号不存在"),
     LOCKED_ACCOUNT(302, "账号已被禁用"),
     VERIFY_CODE_TIMEOUT(310, "验证码已过期"),
-    INCORRECT_CAPTCHA(311, "验证码错误");
+    INCORRECT_CAPTCHA(311, "验证码错误"),
+
+    USERNAME_NOT_EXIST(300, "手机号不存在"),
+    SMS_VERIFY_CODE_TIMEOUT(301, "短信验证码已过期"),
+    SMS_VERIFY_CODE_NOT_RIGHT(302, "短信验证码错误"),
+    SMS_VERIFY_CODE_SEND_FAIL(303, "短信验证码发送失败"),
+    UNFOLLOW_OFFICIAL_ACCOUNT(304, "未关注公众号");
     /***************************业务相关******************************/
 
     /**

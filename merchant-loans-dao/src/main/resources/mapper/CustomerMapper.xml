@@ -28,14 +28,14 @@
         id, account, avatar, `password`, phone, realname, username, mini_openid, wx_openid,
         enable_status, del_flag, created_date, created_by, updated_date, updated_by
     </sql>
-    <select id="selectByPhone" resultType="cn.com.payu.modules.entity.Customer">
+    <select id="selectByPhone" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from d_customer
         where phone = #{phone}
     </select>
 
-    <select id="selectByWxOpenid" resultType="cn.com.payu.modules.entity.Customer">
+    <select id="selectByWxOpenid" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from d_customer

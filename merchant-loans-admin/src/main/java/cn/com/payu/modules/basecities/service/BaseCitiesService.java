@@ -24,14 +24,10 @@ public class BaseCitiesService {
     @Autowired
     private RedisUtils redisUtils;
 
-    public List<BaseCity> list(Map<String, String> params) {
-        String provinceCode = params.get("provinceCode");
+    public List<BaseCity> list(String provCode) {
         List<BaseCity> list = null;//redisUtils.getListByPrex(ConstantCacheKeys.REDIS_CITY_KEY + provinceCode);
 //        Collections.sort(list, Comparator.comparing(BaseCity::getCode));
-
-        BaseCity city = new BaseCity();
-        city.setProvinceCode(provinceCode);
-        if (CollectionUtils.isEmpty(list)) list = cityMapper.selectByExample(city);
+        if (CollectionUtils.isEmpty(list)) list = cityMapper.selectByProvCode(provCode);
         return list;
     }
 }

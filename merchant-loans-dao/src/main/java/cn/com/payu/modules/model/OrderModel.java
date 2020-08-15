@@ -2,6 +2,7 @@ package cn.com.payu.modules.model;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.util.Date;
 
 @Data
@@ -44,6 +45,10 @@ public class OrderModel {
      * 借款额度
      */
     private Integer annuity;
+
+    private Integer auditPeriod;
+
+    private Integer enableStatus;
 
     /**
      * 进件放款状态

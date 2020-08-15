@@ -8,9 +8,7 @@ import java.util.List;
 @Data
 public class ApplymentQueryPlansRespData {
 
-
-
     @SerializedName("plan_list")
-    private List<ApplymentQueryPlansItem> planList;
+    private List<List<ApplymentQueryPlansItem>> planList;
 
 }

@@ -2,7 +2,6 @@ package cn.com.payu.modules.customer.service;
 
 import cn.com.payu.common.exception.AdminException;
 import cn.com.payu.modules.entity.Customer;
-import cn.com.payu.modules.entity.User;
 import cn.com.payu.modules.mapper.CustomerMapper;
 import cn.com.payu.modules.user.utils.JwtUser;
 import com.glsx.plat.common.utils.StringUtils;
@@ -11,12 +10,14 @@ import com.glsx.plat.exception.SystemMessage;
 import com.glsx.plat.jwt.util.JwtUtils;
 import com.glsx.plat.jwt.util.ObjectUtils;
 import com.glsx.plat.web.utils.SessionUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class CustomerService {
 
@@ -44,7 +45,6 @@ public class CustomerService {
         jwtUser.setApplication(jwtUtils.getApplication());
 
         Map<String, String> userMap = (Map<String, String>) ObjectUtils.objectToMap(jwtUser);
-
         return jwtUtils.createToken(jwtId, userMap);
     }
 
@@ -57,10 +57,8 @@ public class CustomerService {
 
         if (StringUtils.isNullOrEmpty(token)) throw new AdminException(SystemMessage.ILLEGAL_ACCESS.getCode(), "登录已失效");
 
-        if (token.startsWith("Bearer")) token = token.replace("Bearer ", "");
-
         //解析token，反转成JwtUser对象
-        Map<String, Object> userMap = jwtUtils.parseClaim(JwtUser.class, token);
+        Map<String, Object> userMap = jwtUtils.parseClaim(token, JwtUser.class);
         JwtUser jwtUser = null;
         try {
             jwtUser = (JwtUser) ObjectUtils.mapToObject(userMap, JwtUser.class);
