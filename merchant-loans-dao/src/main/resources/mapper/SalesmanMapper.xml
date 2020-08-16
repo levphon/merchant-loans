@@ -7,7 +7,7 @@
         -->
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
-        <result column="s_no" jdbcType="VARCHAR" property="sNo"/>
+        <result column="s_no" jdbcType="VARCHAR" property="jobNo"/>
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
         <result column="prov_code" jdbcType="VARCHAR" property="provCode"/>
         <result column="city_code" jdbcType="VARCHAR" property="cityCode"/>
@@ -30,7 +30,7 @@
 
     <select id="search" resultType="cn.com.payu.modules.model.SalesmanModel">
         select
-        id, `name`, s_no sNo, phone, prov_code provCode, city_code cityCode, area_code areaCode, address,
+        id, `name`, s_no jobNo, phone, prov_code provCode, city_code cityCode, area_code areaCode, address,
         enable_status enableStatus,created_date createdDate
         from d_salesman ds
         where ds.del_flag = 0
@@ -45,17 +45,37 @@
 
     <select id="export" resultType="cn.com.payu.modules.model.export.SalesmanExport">
         select
-        id, `name`, s_no sNo, phone, prov_code provCode, city_code cityCode, area_code areaCode, address,
+        ds.id, ds.name, s_no jobNo, phone, bp.name prov, bc.name city, ba.name area, address,
+        ds.enable_status enableStatus,ds.created_date createdDate
+        from d_salesman ds
+        left join base_provinces bp on ds.prov_code = bp.code
+        left join base_cities bc on ds.city_code = bc.code
+        left join base_areas ba on ds.area_code = ba.code
+        where ds.del_flag = 0
+        <if test="name != null and name != ''">
+            and ds.name = #{name}
+        </if>
+        <if test="sDate != null and sDate != '' and eDate != null and eDate != ''">
+            and DATE_FORMAT(ds.created_date, '%Y-%m-%d') &gt;= #{sDate}
+            and DATE_FORMAT(ds.created_date, '%Y-%m-%d') &lt;= #{eDate}
+        </if>
+    </select>
+
+    <select id="selectById" resultType="cn.com.payu.modules.model.SalesmanModel">
+        select
+        id, `name`, s_no jobNo, phone, prov_code provCode, city_code cityCode, area_code areaCode, address,
         enable_status enableStatus,created_date createdDate
         from d_salesman ds
         where ds.del_flag = 0
-        <if test="name != null and name != ''">
-            and name = #{name}
-        </if>
-        <if test="sDate != null and sDate != '' and eDate != null and eDate != ''">
-            and DATE_FORMAT(created_date, '%Y-%m-%d') &gt;= #{sDate}
-            and DATE_FORMAT(created_date, '%Y-%m-%d') &lt;= #{eDate}
-        </if>
+        and ds.id = #{id}
+    </select>
+
+    <select id="selectByJobNo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from d_salesman
+        where del_flag = 0
+        and s_no = #{jobNo}
     </select>
 
     <update id="enableById" parameterType="java.lang.Integer">

@@ -25,4 +25,11 @@
         where city_code =#{cityCode}
         order by code
     </select>
+
+    <select id="selectByCode" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from base_areas
+        where code =#{areaCode}
+    </select>
 </mapper>

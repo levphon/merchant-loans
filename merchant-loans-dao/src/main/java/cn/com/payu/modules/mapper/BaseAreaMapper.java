@@ -12,4 +12,6 @@ public interface BaseAreaMapper extends CommonBaseMapper<BaseArea> {
 
     List<BaseArea> selectByCityCode(@Param("cityCode") String cityCode);
 
+    BaseArea selectByCode(@Param("areaCode") String areaCode);
+
 }

@@ -12,4 +12,6 @@ public interface BaseCityMapper extends CommonBaseMapper<BaseCity> {
 
     List<BaseCity> selectByProvCode(@Param("provCode") String provCode);
 
+    BaseCity selectByCode(@Param("cityCode") String cityCode);
+
 }

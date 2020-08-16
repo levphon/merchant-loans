@@ -3,11 +3,17 @@ package cn.com.payu.modules.common.service;
 import cn.com.payu.common.constant.Constants;
 import cn.com.payu.common.constant.MessageTemplateKeys;
 import cn.com.payu.common.enmus.ResultCodeEnum;
-import com.glsx.plat.common.utils.SnowFlake;
+import cn.com.payu.modules.entity.BaseArea;
+import cn.com.payu.modules.entity.BaseCity;
+import cn.com.payu.modules.entity.BaseProvince;
+import cn.com.payu.modules.mapper.BaseAreaMapper;
+import cn.com.payu.modules.mapper.BaseCityMapper;
+import cn.com.payu.modules.mapper.BaseProvinceMapper;
 import com.glsx.plat.common.utils.StringUtils;
 import com.glsx.plat.context.utils.PropertiesUtils;
 import com.glsx.plat.exception.BusinessException;
 import com.glsx.plat.redis.utils.RedisUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,6 +33,13 @@ public class CommonService {
 
     @Resource
     private MessageService messageService;
+
+    @Autowired
+    private BaseProvinceMapper provinceMapper;
+    @Autowired
+    private BaseCityMapper cityMapper;
+    @Autowired
+    private BaseAreaMapper areaMapper;
 
     /**
      * 发送验证码
@@ -68,15 +81,23 @@ public class CommonService {
             throw BusinessException.create(ResultCodeEnum.SMS_VERIFY_CODE_NOT_RIGHT.getMsg());
     }
 
-    public long snowFlakeId() {
-        // 锁表 一小时的超时时间
-//        if (!redisService.addRedisLock(ConstantKeys.REDIS_LOCK_MAX_ORDER_NUMBER, 2000, 2)) {
-//            return 0;
-//        }
-        long id = SnowFlake.nextId();
-//        // 解锁
-//        redisService.delRedisLock(ConstantKeys.REDIS_LOCK_MAX_ORDER_NUMBER);
-        return id;
+    public String getProvinceName(String provCode) {
+        BaseProvince province = provinceMapper.selectByCode(provCode);
+        return province != null ? province.getName() : "";
+    }
+
+    public String getCityName(String cityCode) {
+        BaseCity city = cityMapper.selectByCode(cityCode);
+        return city != null ? city.getName() : "";
+    }
+
+    public String getAreaName(String areaCode) {
+        BaseArea area = areaMapper.selectByCode(areaCode);
+        return area != null ? area.getName() : "";
+    }
+
+    public String getProvCityAreaName(String provCode, String cityCode, String areaCode) {
+        return getProvinceName(provCode) + getCityName(cityCode) + getAreaName(areaCode);
     }
 
 }

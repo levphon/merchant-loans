@@ -1,8 +1,8 @@
 {
-  "code": 200,
-  "msg": "ok",
-  "data": {
-    "uniqueCode": "202008141034453009668",
-    "user_id": 21141
-  }
+  "sNo": "MLS0002",
+  "phone": "13800138001",
+  "provCode": "44",
+  "cityCode": "4",
+  "areaCode": "",
+  "address": ""
 }

@@ -17,7 +17,7 @@ public class SalesmanModel {
     /**
      * 业务员编号
      */
-    private String sNo;
+    private String jobNo;
 
     /**
      * 手机号码

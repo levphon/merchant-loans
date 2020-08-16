@@ -23,4 +23,11 @@
         where province_code =#{provCode}
         order by code
     </select>
+
+    <select id="selectByCode" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from base_cities
+        where code =#{cityCode}
+    </select>
 </mapper>

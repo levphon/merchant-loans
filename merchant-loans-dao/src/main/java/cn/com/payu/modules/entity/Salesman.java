@@ -19,7 +19,7 @@ public class Salesman extends BaseEntity {
      * 业务员编号
      */
     @Column(name = "s_no")
-    private String sNo;
+    private String jobNo;
 
     /**
      * 手机号码

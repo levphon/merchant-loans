@@ -22,7 +22,7 @@ public class SalesmanDTO {
      * 业务员编号
      */
     @NotBlank(message = "业务员编号不能为空")
-    private String sNo;
+    private String jobNo;
 
     /**
      * 手机号码

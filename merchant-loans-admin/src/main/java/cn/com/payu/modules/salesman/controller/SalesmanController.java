@@ -1,6 +1,7 @@
 package cn.com.payu.modules.salesman.controller;
 
 import cn.com.payu.modules.entity.Salesman;
+import cn.com.payu.modules.mapper.SalesmanMapper;
 import cn.com.payu.modules.model.SalesmanModel;
 import cn.com.payu.modules.model.export.SalesmanExport;
 import cn.com.payu.modules.model.search.SalesmanSearch;
@@ -30,8 +31,8 @@ public class SalesmanController {
     @Autowired
     private SalesmanService salesmanService;
 
-    @GetMapping("/list")
-    public R list(SalesmanSearch search) {
+    @GetMapping("/search")
+    public R search(SalesmanSearch search) {
         PageHelper.startPage(search.getPageNumber(), search.getPageSize());
         PageInfo<SalesmanModel> pageInfo = salesmanService.search(search);
         return R.ok().putPageData(pageInfo);
@@ -43,13 +44,19 @@ public class SalesmanController {
         EasyExcelUtils.writeExcel(response, list, "业务员_" + DateUtils.formatSerial(new Date()), "Sheet1", SalesmanExport.class);
     }
 
+    @GetMapping(value = "/info")
+    public R info(@RequestParam Long id) {
+        SalesmanModel model = salesmanService.getById(id);
+        return R.ok().data(model);
+    }
+
     /**
      * 保存
      */
-    @PostMapping("/save")
-    public R save(@RequestBody SalesmanDTO salesmanDTO) {
+    @PostMapping("/add")
+    public R add(@RequestBody @Valid SalesmanDTO salesmanDTO) {
         Salesman salesman = salesmanDTO.convertTo();
-        salesmanService.save(salesman);
+        salesmanService.add(salesman);
         return R.ok();
     }
 

@@ -7,6 +7,7 @@ import cn.com.payu.modules.model.export.SalesmanExport;
 import cn.com.payu.modules.model.search.SalesmanSearch;
 import com.github.pagehelper.PageInfo;
 import com.glsx.plat.core.enums.SysConstants;
+import com.glsx.plat.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,21 +21,43 @@ public class SalesmanService {
 
     public PageInfo<SalesmanModel> search(SalesmanSearch search) {
         List<SalesmanModel> list = salesmanMapper.search(search);
-        final PageInfo<SalesmanModel> pageInfo = new PageInfo<>(list);
-        return pageInfo;
+        for (SalesmanModel sm : list) {
+            sm.setEnableStatusDesc(SysConstants.EnableStatus.getValueByCode(sm.getEnableStatus()));
+        }
+        return new PageInfo<>(list);
     }
 
     public List<SalesmanExport> export(SalesmanSearch search) {
         List<SalesmanExport> list = salesmanMapper.export(search);
+        for (SalesmanExport se : list) {
+            se.setEnableStatusDesc(SysConstants.EnableStatus.getValueByCode(se.getEnableStatus()));
+        }
         return list;
     }
 
-    public void save(Salesman salesman) {
+    public SalesmanModel getById(Long id) {
+        return salesmanMapper.selectById(id);
+    }
+
+    public void add(Salesman salesman) {
+        checkExistSalesman(salesman);
         salesmanMapper.insert(salesman);
     }
 
     public void edit(Salesman salesman) {
+        checkExistSalesman(salesman);
         salesmanMapper.updateByPrimaryKeySelective(salesman);
+    }
+
+    public void checkExistSalesman(Salesman salesman) {
+        Salesman sm = salesmanMapper.selectByJobNo(salesman.getJobNo());
+        if (sm != null) {
+            if (salesman.getId() == null)
+                throw BusinessException.create("业务员编号已存在");
+
+            if (!salesman.getId().equals(sm.getId()))
+                throw BusinessException.create("业务员编号已存在");
+        }
     }
 
     public void enableOrDisable(Integer id) {
