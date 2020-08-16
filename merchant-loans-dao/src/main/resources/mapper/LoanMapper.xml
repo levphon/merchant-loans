@@ -45,13 +45,33 @@
         where apply_number = #{applyNumber}
     </select>
 
-    <select id="search" resultType="cn.com.payu.modules.model.OrderModel">
-        select dl.id,dl.order_number orderNumber,dlp.name,dlp.phone_number phoneNumber,
-        dl.annuity,dl.loan_status loanStatus,dcb.bind_status bindStatus,
+    <select id="selectLastLoanByCustomerPhone" parameterType="java.lang.String" resultType="cn.com.payu.modules.model.OrderModel">
+        select dl.id,dl.order_number orderNumber,dlp.name,dlp.certificate_number certificateNumber,dlp.phone_number phoneNumber,
+        dl.annuity,dl.loan_period loanPeriod, dl.loan_status loanStatus,dcb.bind_status bindStatus,
         audit_amount auditAmount, audit_period auditPeriod, dl.created_date createdDate
         from d_loan dl
         left join d_loan_personal dlp on dl.id = dlp.loan_id
-        left join d_customer_bankcard dcb on dl.id = dcb.loan_id
+        left join d_loan_bankcard dcb on dl.id = dcb.loan_id
+        where dl.del_flag = 0
+        and dlp.phone_number = #{phone}
+        order by dl.id desc limit 1
+    </select>
+
+    <select id="selectByCustomerPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select dl.* from d_loan_personal dlp, d_loan dl
+        where dlp.loan_id  = dl.id
+        and dlp.phone_number = #{phone}
+        order by dl.id desc
+    </select>
+
+    <select id="search" resultType="cn.com.payu.modules.model.OrderModel">
+        select dl.id,dl.order_number orderNumber,dlp.name,dlp.certificate_number certificateNumber,
+        dcb.account_no accountNo,dlp.phone_number phoneNumber,
+        dl.annuity,dl.loan_period loanPeriod, dl.loan_status loanStatus,dcb.bind_status bindStatus,
+        audit_amount auditAmount, audit_period auditPeriod, dl.created_date createdDate
+        from d_loan dl
+        left join d_loan_personal dlp on dl.id = dlp.loan_id
+        left join d_loan_bankcard dcb on dl.id = dcb.loan_id
         where dl.del_flag = 0
         <if test="orderNumber != null and orderNumber != ''">
             and dl.order_number LIKE CONCAT('%',#{orderNumber},'%')
@@ -65,12 +85,12 @@
         </if>
     </select>
     <select id="export" resultType="cn.com.payu.modules.model.export.OrderExport">
-        select dl.id,dl.order_number orderNumber,dlp.name,dlp.phone_number phoneNumber,
-        dl.annuity,dl.loan_status loanStatus,dcb.bind_status bindStatus,
+        select dl.id,dl.order_number orderNumber,dlp.name,dlp.phone_number phoneNumber,dlp.certificate_number certificateNumber,
+        dl.annuity,dl.loan_period loanPeriod, dl.loan_status loanStatus,dcb.bind_status bindStatus,
         audit_amount auditAmount, audit_period auditPeriod, dl.created_date createdDate
         from d_loan dl
         left join d_loan_personal dlp on dl.id = dlp.loan_id
-        left join d_customer_bankcard dcb on dl.id = dcb.loan_id
+        left join d_loan_bankcard dcb on dl.id = dcb.loan_id
         where 1=1
         <if test="orderNumber != null and orderNumber != ''">
             and dl.order_number LIKE CONCAT('%',#{orderNumber},'%')

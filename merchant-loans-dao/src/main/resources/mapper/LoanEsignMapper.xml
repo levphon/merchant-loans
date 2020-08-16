@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.com.payu.modules.mapper.LoanContactMapper">
-    <resultMap id="BaseResultMap" type="cn.com.payu.modules.entity.LoanContact">
+<mapper namespace="cn.com.payu.modules.mapper.LoanEsignMapper">
+    <resultMap id="BaseResultMap" type="cn.com.payu.modules.entity.LoanEsign">
         <!--
           WARNING - @mbg.generated
         -->
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="loan_id" jdbcType="BIGINT" property="loanId"/>
-        <result column="contact_name" jdbcType="VARCHAR" property="contactName"/>
-        <result column="relation" jdbcType="INTEGER" property="relation"/>
-        <result column="id_number" jdbcType="VARCHAR" property="idNumber"/>
-        <result column="contact_number" jdbcType="VARCHAR" property="contactNumber"/>
-        <result column="work_unit" jdbcType="VARCHAR" property="workUnit"/>
-        <result column="unit_address" jdbcType="VARCHAR" property="unitAddress"/>
-        <result column="contact_address" jdbcType="VARCHAR" property="contactAddress"/>
-        <result column="is_know" jdbcType="INTEGER" property="isKnow"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="short_url" jdbcType="VARCHAR" property="shortUrl"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
         <result column="enable_status" jdbcType="INTEGER" property="enableStatus"/>
         <result column="del_flag" jdbcType="INTEGER" property="delFlag"/>
         <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
@@ -26,14 +21,14 @@
         <!--
           WARNING - @mbg.generated
         -->
-        id, loan_id, contact_name, relation, id_number, contact_number, work_unit, unit_address,
-        contact_address, is_know, enable_status, del_flag, created_date, created_by, updated_date,
+        id, loan_id, url, short_url, type, enable_status, del_flag, created_date, created_by, updated_date,
         updated_by
     </sql>
+
     <select id="selectByLoanId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from d_loan_contact
+        from d_loan_esign
         where loan_id = #{loanId}
     </select>
 </mapper>

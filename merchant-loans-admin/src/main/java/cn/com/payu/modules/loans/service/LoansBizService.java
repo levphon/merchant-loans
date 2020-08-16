@@ -1,11 +1,16 @@
 package cn.com.payu.modules.loans.service;
 
 import cn.com.payu.common.enmus.CallbackType;
+import cn.com.payu.common.enmus.DataDictionary;
 import cn.com.payu.common.enmus.LoanStatus;
+import cn.com.payu.common.utils.idcardUtil.IdcardInfoExtractor;
 import cn.com.payu.modules.entity.*;
+import cn.com.payu.modules.loans.model.LoansModel;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.mapper.*;
+import cn.com.payu.modules.model.LoanPlansModel;
+import cn.com.payu.modules.model.OrderModel;
 import com.glsx.plat.exception.BusinessException;
 import com.glsx.plat.redis.service.GainIdService;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +55,7 @@ public class LoansBizService {
     @Autowired
     private LoanBankcardMapper loanBankcardMapper;
 
-    public String applymentIndex(ApplymentIndexReq req) {
+    public String applymentIndex(ApplymentIndexReq req, String phone) {
 
         String orderNumber = gainIdService.gainId("B");
 
@@ -72,7 +77,6 @@ public class LoansBizService {
         LoanPersonal loanPersonal = new LoanPersonal();
         LoanAddress loanAddress = new LoanAddress();
         LoanJob loanJob = new LoanJob();
-        LoanDocument loanDocument = new LoanDocument();
         List<LoanIncome> loanIncomeList = new ArrayList<>();
         List<LoanContact> loanContactList = new ArrayList<>();
 
@@ -83,12 +87,17 @@ public class LoansBizService {
 
         loan.setOrderNumber(orderNumber);
         loan.setLoanStatus(LoanStatus.INIT.getCode());
+        loan.setPayMethod(DataDictionary.PayMethod.method2.getCode());
         loanMapper.insertUseGeneratedKeys(loan);
 
         loanPersonal.setLoanId(loan.getId());
+        loanPersonal.setPhoneNumber(phone);
+        loanPersonal.setCertificateType(1);
+        IdcardInfoExtractor ie = new IdcardInfoExtractor(loanPersonal.getCertificateNumber());
+        loanPersonal.setGender(ie.getGender());
+
         loanAddress.setLoanId(loan.getId());
         loanJob.setLoanId(loan.getId());
-        loanDocument.setLoanId(loan.getId());
 
         if (income.getPrivateIncome() != null) {
             LoanIncome loanIncome = new LoanIncome();
@@ -102,7 +111,7 @@ public class LoansBizService {
             loanIncome.setLoanId(loan.getId());
             loanIncomeList.add(loanIncome);
         }
-        BeanUtils.copyProperties(document, loanDocument);
+        List<LoanDocument> loanDocumentList = transDocument(loan.getId(), document);
         for (ApplymentIndexContact indexContact : contactData) {
             LoanContact loanContact = new LoanContact();
             BeanUtils.copyProperties(indexContact, loanContact);
@@ -112,11 +121,97 @@ public class LoansBizService {
         loanPersonalMapper.insert(loanPersonal);
         loanAddressMapper.insert(loanAddress);
         loanJobMapper.insert(loanJob);
-        loanDocumentMapper.insert(loanDocument);
+        loanDocumentMapper.insertList(loanDocumentList);
         loanIncomeMapper.insertList(loanIncomeList);
         loanContactMapper.insertList(loanContactList);
 
         return orderNumber;
+    }
+
+    public List<LoanDocument> transDocument(Long loanId, ApplymentIndexDocument aiDocument) {
+        List<LoanDocument> loanDocumentList = new ArrayList();
+
+        LoanDocument document1 = new LoanDocument();
+        document1.setLoanId(loanId);
+        document1.setType(DataDictionary.DocumentFile.id_card_front.getCode());
+        document1.setName(DataDictionary.DocumentFile.id_card_front.getValue());
+        document1.setUrl(aiDocument.getIdCardFront());
+        loanDocumentList.add(document1);
+
+        LoanDocument document2 = new LoanDocument();
+        document2.setLoanId(loanId);
+        document2.setType(DataDictionary.DocumentFile.id_card_back.getCode());
+        document2.setName(DataDictionary.DocumentFile.id_card_back.getValue());
+        document2.setUrl(aiDocument.getIdCardFront());
+        loanDocumentList.add(document2);
+
+        String[] creditReport = aiDocument.getCreditReport();
+        if (creditReport != null) {
+            for (String url : creditReport) {
+                LoanDocument document = new LoanDocument();
+                document.setLoanId(loanId);
+                document.setType(DataDictionary.DocumentFile.credit_report.getCode());
+                document.setName(DataDictionary.DocumentFile.credit_report.getValue());
+                document.setUrl(url);
+                loanDocumentList.add(document);
+            }
+        }
+        String[] incomeProof = aiDocument.getIncomeProof();
+        if (incomeProof != null) {
+            for (String url : incomeProof) {
+                LoanDocument document = new LoanDocument();
+                document.setLoanId(loanId);
+                document.setType(DataDictionary.DocumentFile.income_proof.getCode());
+                document.setName(DataDictionary.DocumentFile.income_proof.getValue());
+                document.setUrl(url);
+                loanDocumentList.add(document);
+            }
+        }
+        String[] addressProof = aiDocument.getAddressProof();
+        if (addressProof != null) {
+            for (String url : addressProof) {
+                LoanDocument document = new LoanDocument();
+                document.setLoanId(loanId);
+                document.setType(DataDictionary.DocumentFile.address_proof.getCode());
+                document.setName(DataDictionary.DocumentFile.address_proof.getValue());
+                document.setUrl(url);
+                loanDocumentList.add(document);
+            }
+        }
+        String[] assistMaterial = aiDocument.getAssistMaterial();
+        if (assistMaterial != null) {
+            for (String url : assistMaterial) {
+                LoanDocument document = new LoanDocument();
+                document.setLoanId(loanId);
+                document.setType(DataDictionary.DocumentFile.assist_material.getCode());
+                document.setName(DataDictionary.DocumentFile.assist_material.getValue());
+                document.setUrl(url);
+                loanDocumentList.add(document);
+            }
+        }
+        String[] applyMaterial = aiDocument.getApplyMaterial();
+        if (applyMaterial != null) {
+            for (String url : applyMaterial) {
+                LoanDocument document = new LoanDocument();
+                document.setLoanId(loanId);
+                document.setType(DataDictionary.DocumentFile.apply_material.getCode());
+                document.setName(DataDictionary.DocumentFile.apply_material.getValue());
+                document.setUrl(url);
+                loanDocumentList.add(document);
+            }
+        }
+        String[] signVideo = aiDocument.getSignVideo();
+        if (signVideo != null) {
+            for (String url : signVideo) {
+                LoanDocument document = new LoanDocument();
+                document.setLoanId(loanId);
+                document.setType(DataDictionary.DocumentFile.sign_video.getCode());
+                document.setName(DataDictionary.DocumentFile.sign_video.getValue());
+                document.setUrl(url);
+                loanDocumentList.add(document);
+            }
+        }
+        return loanDocumentList;
     }
 
     public void applymentReject(ApplymentRejectReq req) {
@@ -162,12 +257,13 @@ public class LoansBizService {
     }
 
     public void payPretiedcard(PayPretiedcardReq req) {
+
         Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
 
         //2020/8/14 银行卡信息校验及入库
 //        LoanBankcard bankcard = loanBankcardMapper.selectBy4Element(req.getAccountName(), req.getIdcardNo(), req.getAccountNo(), req.getMobile());
         LoanBankcard bankcard = loanBankcardMapper.selectByLoanId(loan.getId());
-        if (bankcard != null && 1 != bankcard.getBindStatus())
+        if (bankcard != null && DataDictionary.BindStatus.bound.getCode().equals(bankcard.getBindStatus()))
             throw BusinessException.create("该银行卡已经绑卡，请勿重复绑卡！");
 
         req.setOrderNumber(loan.getApplyNumber());
@@ -180,7 +276,8 @@ public class LoansBizService {
         bankcard.setIdcardNo(req.getIdcardNo());
         bankcard.setAccountNo(req.getAccountNo());
         bankcard.setMobile(req.getMobile());
-        bankcard.setBindStatus(0);
+        bankcard.setUniqueCode(respData.getUniqueCode());
+        bankcard.setBindStatus(DataDictionary.BindStatus.unbound.getCode());
         bankcard.setUseStatus(0);
         loanBankcardMapper.insert(bankcard);
     }
@@ -193,7 +290,7 @@ public class LoansBizService {
         //2020/8/14 银行卡信息更新：绑定状态、使用状态
         LoanBankcard bankcard = loanBankcardMapper.selectByLoanId(loan.getId());
         bankcard.setUniqueCode(req.getUniqueCode());
-        bankcard.setBindStatus(1);
+        bankcard.setBindStatus(DataDictionary.BindStatus.bound.getCode());
         bankcard.setUseStatus(1);
         loanBankcardMapper.updateByPrimaryKeySelective(bankcard);
     }
@@ -305,9 +402,9 @@ public class LoansBizService {
         if (CallbackType.APPLY_DATA_CHECK.getCode().equals(req.getCallbackType())) {
 
         } else if (CallbackType.APPLY_SUCCESS.getCode().equals(req.getCallbackType())) {
-            loan.setApplyNumber(req.getApplyNumber());
-            loan.setAnnuity(req.getAuditAmount());
-            loan.setLoanPeriod(req.getAuditPeriod());
+            loan.setApplyNumber(req.getApplyNumber());//对方订单编号
+            loan.setAuditAmount(req.getAuditAmount());//审核额度
+            loan.setAuditPeriod(req.getAuditPeriod());//审核期数
             loan.setLoanStatus(LoanStatus.RC_FIRST_TRIAL.getCode());
         } else if (CallbackType.RC_PASS.getCode().equals(req.getCallbackType())) {//对方初审通过不会回调，复审通过才会回调
 //            if (LoanStatus.RC_FIRST_TRIAL.getCode().equals(loan.getLoanStatus())) {//初审通过
@@ -363,6 +460,46 @@ public class LoansBizService {
             }
             loanPlansMapper.insertList(loanPlans);
         }
+    }
+
+    public LoansModel getCurrentLoanDetails(String phone) {
+
+        OrderModel om = loanMapper.selectLastLoanByCustomerPhone(phone);
+
+        LoansModel model = new LoansModel();
+        if (om != null) {
+            model.setOrderNumber(om.getOrderNumber());
+            model.setName(om.getName());
+            model.setIdcardNo(om.getCertificateNumber());
+            model.setPhoneNumber(om.getPhoneNumber());
+            model.setAnnuity(om.getAuditAmount() == null ? om.getAnnuity() : om.getAuditAmount());
+            model.setLoanPeriod(om.getAuditPeriod() == null ? om.getLoanPeriod() : om.getAuditPeriod());
+            model.setLoanStatus(om.getLoanStatus());
+            model.setLoanStatusDesc(LoanStatus.getNameByCode(om.getLoanStatus()));
+            model.setBindStatus(om.getBindStatus());
+
+            if (om.getBindStatus() == null) model.setBindStatus(DataDictionary.BindStatus.unbound.getCode());
+            model.setBindStatusDesc(DataDictionary.BindStatus.getValueByCode(om.getBindStatus()));
+        }
+        return model;
+    }
+
+    public Integer getRepayStatus(Long loanId) {
+        List<LoanPlansModel> plansList = loanPlansMapper.selectDetailsByLoanId(loanId);
+        if (CollectionUtils.isEmpty(plansList)) return DataDictionary.RepayStatus.initialize.getCode();
+        boolean overdueFlag = false;
+        boolean repaymentFlag = true;
+        for (LoanPlansModel lpm : plansList) {
+            if (DataDictionary.RepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus()) && lpm.getOverdueDays() > 0) {
+                overdueFlag = true;
+            }
+            if (!DataDictionary.RepayStatus.repayment.getCode().equals(lpm.getPlanStatus())) {
+                repaymentFlag = false;
+            }
+        }
+        if (overdueFlag) return DataDictionary.RepayStatus.overdue.getCode();
+        if (repaymentFlag) return DataDictionary.RepayStatus.repayment.getCode();
+        return DataDictionary.RepayStatus.unrepayment.getCode();
     }
 
 }

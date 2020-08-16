@@ -8,17 +8,6 @@ import java.util.Date;
 @Data
 public class OrderModel {
 
-//
-//业务员编号
-//
-//
-//借款额度
-//进件放款状态
-//绑卡状态
-//
-
-//    dl.id,dl.order_number,dlp.name,dlp.phone_number,dl.annuity,dl.loan_status,dcb.bind_status
-
     private Long id;
 
     /**
@@ -37,18 +26,26 @@ public class OrderModel {
     private String name;
 
     /**
+     * 客户证件号码
+     */
+    private String certificateNumber;
+
+    /**
      * 客户手机号
      */
     private String phoneNumber;
 
     /**
-     * 借款额度
+     * 借款额度、期数
      */
     private Integer annuity;
+    private Integer loanPeriod;
 
+    /**
+     * 审批额度、期数
+     */
+    private Integer auditAmount;
     private Integer auditPeriod;
-
-    private Integer enableStatus;
 
     /**
      * 进件放款状态

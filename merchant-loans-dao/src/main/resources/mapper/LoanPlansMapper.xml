@@ -29,4 +29,22 @@
         plan_remain_principal, plan_status, enable_status, del_flag, created_date, created_by,
         updated_date, updated_by
     </sql>
+    <select id="selectByLoanId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from d_loan_plans
+        where loan_id = #{loanId}
+        order by plan_periods_order
+    </select>
+
+    <select id="selectDetailsByLoanId" resultType="cn.com.payu.modules.model.LoanPlansModel">
+        select dlp.id, dlp.loan_id loanId, dlp.plan_periods_order planPeriodsOrder, dlp.plan_repay_time planRepayTime,
+        dlp.plan_repay_principal planRepayPrincipal, dlp.plan_repay_total planRepayTotal,dlp.plan_remain_principal planRemainPrincipal,
+        dlp.plan_status planStatus, dl.order_number orderNumber, dl.loan_status loanStatus, DATEDIFF(now(), dlp.plan_repay_time) overdueDays
+        from d_loan_plans dlp,
+             d_loan dl
+        where dlp.loan_id = dl.id
+        and dlp.loan_id = #{loanId}
+        order by plan_periods_order
+    </select>
 </mapper>

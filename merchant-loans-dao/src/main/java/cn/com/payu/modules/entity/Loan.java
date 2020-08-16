@@ -1,18 +1,14 @@
 package cn.com.payu.modules.entity;
 
+import com.glsx.plat.mybatis.base.BaseEntity;
 import lombok.Data;
 
 import javax.persistence.Column;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @Table(name = "d_loan")
-public class Loan implements Serializable {
-    @Id
-    private Long id;
+public class Loan extends BaseEntity {
 
     /**
      * 商户订单号
@@ -78,25 +74,5 @@ public class Loan implements Serializable {
      */
     @Column(name = "audit_period")
     private Integer auditPeriod;
-
-    @Column(name = "enable_status")
-    private Integer enableStatus;
-
-    @Column(name = "del_flag")
-    private Integer delFlag;
-
-    @Column(name = "created_date")
-    private Date createdDate;
-
-    @Column(name = "created_by")
-    private Integer createdBy;
-
-    @Column(name = "updated_date")
-    private Date updatedDate;
-
-    @Column(name = "updated_by")
-    private Integer updatedBy;
-
-    private static final long serialVersionUID = 1L;
 
 }

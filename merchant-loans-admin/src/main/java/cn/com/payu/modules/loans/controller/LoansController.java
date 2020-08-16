@@ -1,5 +1,7 @@
 package cn.com.payu.modules.loans.controller;
 
+import cn.com.payu.modules.BaseController;
+import cn.com.payu.modules.loans.model.LoansModel;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.loans.service.LoansBizService;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-public class LoansController {
+public class LoansController extends BaseController {
 
     @Autowired
     private LoansBizService loansBizService;
@@ -84,8 +86,14 @@ public class LoansController {
     @SysLog
     @PostMapping(value = "/applyment/index")
     public R applymentIndex(@RequestBody @Valid ApplymentIndexReq req) {
-        String orderNumber = loansBizService.applymentIndex(req);
+        String orderNumber = loansBizService.applymentIndex(req, getAccount());
         return R.ok().data(orderNumber);
+    }
+
+    @GetMapping(value = "/applyment/info")
+    public R applymentInfo() {
+        LoansModel data = loansBizService.getCurrentLoanDetails(getAccount());
+        return R.ok().data(data);
     }
 
     @SysLog
