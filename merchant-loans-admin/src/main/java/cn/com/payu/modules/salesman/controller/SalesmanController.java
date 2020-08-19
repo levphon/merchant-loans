@@ -74,8 +74,8 @@ public class SalesmanController {
     /**
      * 启用停用
      */
-    @PostMapping("/enableOrDisable")
-    public R enableOrDisable(@RequestBody Integer id) {
+    @PostMapping("/startsotp")
+    public R startsotp(@RequestBody Integer id) {
         salesmanService.enableOrDisable(id);
         return R.ok();
     }

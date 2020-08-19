@@ -29,7 +29,8 @@
           WARNING - @mbg.generated
         -->
         id, order_number, apply_number, product_id, annuity, loan_purpose, loan_period, merchant_rate,
-        pay_method, loan_status, audit_amount, audit_period, enable_status, del_flag, created_date, created_by, updated_date, updated_by
+        pay_method, loan_status, audit_amount, audit_period, enable_status, del_flag, created_date, created_by,
+        updated_date, updated_by
     </sql>
     <select id="selectByOrderNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
@@ -45,7 +46,8 @@
         where apply_number = #{applyNumber}
     </select>
 
-    <select id="selectLastLoanByCustomerPhone" parameterType="java.lang.String" resultType="cn.com.payu.modules.model.OrderModel">
+    <select id="selectLastLoanByCustomerPhone" parameterType="java.lang.String"
+            resultType="cn.com.payu.modules.model.OrderModel">
         select dl.id,dl.order_number orderNumber,dlp.name,dlp.certificate_number certificateNumber,dlp.phone_number phoneNumber,
         dl.annuity,dl.loan_period loanPeriod, dl.loan_status loanStatus,dcb.bind_status bindStatus,
         audit_amount auditAmount, audit_period auditPeriod, dl.created_date createdDate
@@ -60,7 +62,17 @@
     <select id="selectByCustomerPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
         select dl.* from d_loan_personal dlp, d_loan dl
         where dlp.loan_id  = dl.id
+        and dl.del_flag = 0
         and dlp.phone_number = #{phone}
+        order by dl.id desc
+    </select>
+
+    <select id="selectLoanedByCustomerPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select dl.* from d_loan_personal dlp, d_loan dl
+        where dlp.loan_id  = dl.id
+        and dl.del_flag = 0
+        and dlp.phone_number = #{phone}
+        and dl.loan_status in (10,12)
         order by dl.id desc
     </select>
 
@@ -85,7 +97,8 @@
         </if>
     </select>
     <select id="export" resultType="cn.com.payu.modules.model.export.OrderExport">
-        select dl.id,dl.order_number orderNumber,dlp.name,dlp.phone_number phoneNumber,dlp.certificate_number certificateNumber,
+        select dl.id,dl.order_number orderNumber,dlp.name,dlp.phone_number phoneNumber,dlp.certificate_number
+        certificateNumber,
         dl.annuity,dl.loan_period loanPeriod, dl.loan_status loanStatus,dcb.bind_status bindStatus,
         audit_amount auditAmount, audit_period auditPeriod, dl.created_date createdDate
         from d_loan dl

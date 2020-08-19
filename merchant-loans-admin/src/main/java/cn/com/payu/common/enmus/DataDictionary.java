@@ -107,7 +107,7 @@ public interface DataDictionary {
                 return "--";
             }
         },
-        repayment {
+        unrepayment {
             @Override
             public Integer getCode() {
                 return 1;
@@ -115,9 +115,9 @@ public interface DataDictionary {
 
             @Override
             public String getValue() {
-                return "尚未还清";
+                return "待还";
             }
-        }, unrepayment {
+        }, repayment {
             @Override
             public Integer getCode() {
                 return 2;
@@ -125,17 +125,17 @@ public interface DataDictionary {
 
             @Override
             public String getValue() {
-                return "已还清";
+                return "已还";
             }
         }, overdue {
             @Override
             public Integer getCode() {
-                return 2;
+                return 3;
             }
 
             @Override
             public String getValue() {
-                return "已逾期";
+                return "逾期";
             }
         };
 

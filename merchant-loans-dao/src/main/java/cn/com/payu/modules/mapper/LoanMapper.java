@@ -19,7 +19,21 @@ public interface LoanMapper extends CommonBaseMapper<Loan> {
 
     OrderModel selectLastLoanByCustomerPhone(@Param("phone") String phone);
 
+    /**
+     * 全部
+     *
+     * @param phone
+     * @return
+     */
     List<Loan> selectByCustomerPhone(@Param("phone") String phone);
+
+    /**
+     * 已经放款
+     *
+     * @param phone
+     * @return
+     */
+    List<Loan> selectLoanedByCustomerPhone(@Param("phone") String phone);
 
     List<OrderModel> search(OrderSearch search);
 

@@ -1,5 +1,6 @@
 package cn.com.payu.modules.order.controller;
 
+import cn.com.payu.modules.entity.LoanPlans;
 import cn.com.payu.modules.model.OrderModel;
 import cn.com.payu.modules.model.export.OrderExport;
 import cn.com.payu.modules.model.search.OrderSearch;
@@ -44,6 +45,12 @@ public class OrderController {
     public R info(@RequestParam Long id) {
         OrderDetailsModel model = orderService.getDetailsById(id);
         return R.ok().data(model);
+    }
+
+    @GetMapping(value = "/repayPlans")
+    public R repayPlans(@RequestParam Long loanId) {
+        List<LoanPlans> plansList = orderService.getRepayPlans(loanId);
+        return R.ok().data(plansList);
     }
 
     @PostMapping("/delete")

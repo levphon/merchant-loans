@@ -1,5 +1,6 @@
 package cn.com.payu.modules.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -33,6 +34,7 @@ public class LoanPlansModel {
     /**
      * 应还日期（账单日）
      */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date planRepayTime;
 
     /**
@@ -54,6 +56,7 @@ public class LoanPlansModel {
      * 还款状态：1尚未还清2已还清
      */
     private Integer planStatus;
+    private String planStatusDesc;
 
     /**
      * 逾期天数

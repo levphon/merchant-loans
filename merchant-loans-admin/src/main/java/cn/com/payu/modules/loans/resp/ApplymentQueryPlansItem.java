@@ -1,5 +1,6 @@
 package cn.com.payu.modules.loans.resp;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ public class ApplymentQueryPlansItem {
     @SerializedName("plan_periods_order")
     private Integer planPeriodsOrder;//还款期数
 
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @SerializedName("plan_repay_time")
     private Date planRepayTime;//应还日期（账单日），eg:2019-06-23
 

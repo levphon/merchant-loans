@@ -1,10 +1,12 @@
 package cn.com.payu.modules.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.glsx.plat.mybatis.base.BaseEntity;
 import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -33,6 +35,7 @@ public class LoanPlans extends BaseEntity {
     /**
      * 应还日期（账单日）
      */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @Column(name = "plan_repay_time")
     private Date planRepayTime;
 
@@ -59,5 +62,8 @@ public class LoanPlans extends BaseEntity {
      */
     @Column(name = "plan_status")
     private Integer planStatus;
+
+    @Transient
+    private String planStatusDesc;
 
 }

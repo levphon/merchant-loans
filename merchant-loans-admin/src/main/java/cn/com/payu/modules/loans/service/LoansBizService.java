@@ -9,8 +9,8 @@ import cn.com.payu.modules.loans.model.LoansModel;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.mapper.*;
-import cn.com.payu.modules.model.LoanPlansModel;
-import cn.com.payu.modules.model.OrderModel;
+import cn.com.payu.modules.model.*;
+import com.glsx.plat.common.utils.DateUtils;
 import com.glsx.plat.exception.BusinessException;
 import com.glsx.plat.redis.service.GainIdService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @author payu
@@ -485,21 +484,148 @@ public class LoansBizService {
     }
 
     public Integer getRepayStatus(Long loanId) {
-        List<LoanPlansModel> plansList = loanPlansMapper.selectDetailsByLoanId(loanId);
-        if (CollectionUtils.isEmpty(plansList)) return DataDictionary.RepayStatus.initialize.getCode();
-        boolean overdueFlag = false;
-        boolean repaymentFlag = true;
-        for (LoanPlansModel lpm : plansList) {
-            if (DataDictionary.RepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus()) && lpm.getOverdueDays() > 0) {
-                overdueFlag = true;
-            }
-            if (!DataDictionary.RepayStatus.repayment.getCode().equals(lpm.getPlanStatus())) {
-                repaymentFlag = false;
+
+        LoanRecordDetails details = getLoanRecordDetails(loanId);
+
+        if (CollectionUtils.isEmpty(details.getPlans())) return DataDictionary.RepayStatus.initialize.getCode();
+
+        if (details.getOverduePeriod() > 0) return DataDictionary.RepayStatus.overdue.getCode();
+        if (details.getRepayedPeriod() > 0) return DataDictionary.RepayStatus.repayment.getCode();
+        return DataDictionary.RepayStatus.unrepayment.getCode();
+    }
+
+    /**
+     * 获取借款详情
+     *
+     * @param loanId
+     * @return
+     */
+    public LoanRecordDetails getLoanRecordDetails(Long loanId) {
+        Loan loan = loanMapper.selectByPrimaryKey(loanId);
+
+        LoanRecordDetails details = new LoanRecordDetails();
+
+        int repaymentFlag = 0;
+        int overdueFlag = 0;
+        BigDecimal planRepayPrincipal = BigDecimal.ZERO;//本期本金
+        BigDecimal planRemainPrincipal = BigDecimal.ZERO;//剩余本金
+        BigDecimal planRepayTotal = BigDecimal.ZERO;//总的要还
+        BigDecimal currentRepayMoney = BigDecimal.ZERO;//逾期未还的+当期的未还
+        Date lastRepayDate = null;
+
+        details.setRepayStatus(DataDictionary.RepayStatus.initialize.getCode());
+
+        List<LoanPlansModel> plansList = loanPlansMapper.selectDetailsByLoanId(loan.getId());
+        if (!CollectionUtils.isEmpty(plansList)) {
+
+            Date curr = DateUtils.truncate(new Date(), Calendar.DATE);
+
+            for (LoanPlansModel lpm : plansList) {
+
+                Date next = lpm.getPlanRepayTime();
+
+                if (DataDictionary.RepayStatus.repayment.getCode().equals(lpm.getPlanStatus())) {
+                    repaymentFlag++;
+                }
+                if (DataDictionary.RepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus())) {
+
+                    planRemainPrincipal = planRemainPrincipal.add(lpm.getPlanRepayPrincipal());
+                    planRepayTotal = planRepayTotal.add(lpm.getPlanRepayTotal());
+
+                    currentRepayMoney = currentRepayMoney.add(lpm.getPlanRepayTotal());
+                    //还款时间当前时间
+                    if (next.after(curr) || next.equals(curr)) {
+                        if (lastRepayDate == null) {
+                            lastRepayDate = next;
+
+                            planRepayPrincipal = lpm.getPlanRepayPrincipal();
+                        } else {
+                            currentRepayMoney = currentRepayMoney.subtract(lpm.getPlanRepayTotal());
+                        }
+                    }
+                }
+                if (DataDictionary.RepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus()) && lpm.getOverdueDays() > 0) {
+                    overdueFlag++;
+
+                    lpm.setPlanStatus(DataDictionary.RepayStatus.overdue.getCode());
+                }
+                lpm.setPlanStatusDesc(DataDictionary.RepayStatus.getValueByCode(lpm.getPlanStatus()));
             }
         }
-        if (overdueFlag) return DataDictionary.RepayStatus.overdue.getCode();
-        if (repaymentFlag) return DataDictionary.RepayStatus.repayment.getCode();
-        return DataDictionary.RepayStatus.unrepayment.getCode();
+
+        details.setLoanId(loan.getId());
+        details.setOrderNumber(loan.getOrderNumber());
+        details.setAnnuity(loan.getAuditAmount() == null ? loan.getAnnuity() : loan.getAuditAmount());
+        details.setLoanPeriod(loan.getAuditPeriod() == null ? loan.getLoanPeriod() : loan.getAuditPeriod());
+        details.setRepayedPeriod(repaymentFlag);
+        details.setOverduePeriod(overdueFlag);
+        details.setPlanRepayPrincipal(planRepayPrincipal);
+        details.setPlanRemainPrincipal(planRemainPrincipal);
+        details.setPlanRepayTotal(planRepayTotal);
+        details.setPlans(plansList);
+        if (repaymentFlag > 0) details.setRepayStatus(DataDictionary.RepayStatus.repayment.getCode());
+        if (overdueFlag > 0) details.setRepayStatus(DataDictionary.RepayStatus.overdue.getCode());
+        details.setCurrentRepayMoney(currentRepayMoney);
+        details.setLastRepayDate(lastRepayDate);
+        return details;
+    }
+
+    public List<LoanRecordModel> loanList(String phone) {
+        List<LoanRecordModel> list = new ArrayList<>();
+
+        List<Loan> loanList = loanMapper.selectLoanedByCustomerPhone(phone);
+        for (Loan loan : loanList) {
+            LoanRecordModel lrm = new LoanRecordModel();
+            lrm.setLoanId(loan.getId());
+            lrm.setOrderNumber(loan.getOrderNumber());
+            lrm.setAnnuity(loan.getAuditAmount());
+            lrm.setLoanPeriod(loan.getAuditPeriod());
+            lrm.setLoanDate(loan.getCreatedDate());
+            setLoanRecordModel(lrm);
+
+            list.add(lrm);
+        }
+        return list;
+    }
+
+    private void setLoanRecordModel(LoanRecordModel lrm) {
+
+        LoanRecordDetails details = getLoanRecordDetails(lrm.getLoanId());
+
+        if (CollectionUtils.isEmpty(details.getPlans())) return;
+
+        lrm.setRepayStatus(details.getRepayStatus());
+        lrm.setRepayStatusDesc(DataDictionary.RepayStatus.getValueByCode(lrm.getRepayStatus()));
+
+        lrm.setCurrentRepayMoney(details.getCurrentRepayMoney());
+        lrm.setLastRepayDate(details.getLastRepayDate());
+        lrm.setTotalRepayAmount(details.getPlanRepayTotal());
+    }
+
+    public LoanRecordDetails loanListDetails(Long loanId) {
+        return getLoanRecordDetails(loanId);
+    }
+
+    public List<RepayIn7DaysModel> repayIn7days(String phone) {
+        List<RepayIn7DaysModel> list = new ArrayList<>();
+
+        List<Loan> loanList = loanMapper.selectLoanedByCustomerPhone(phone);
+        for (Loan loan : loanList) {
+            LoanRecordDetails details = getLoanRecordDetails(loan.getId());
+
+        }
+        return list;
+    }
+
+    public List<RepayIn7DayDetails> repayIn7daysDetails(String phone) {
+        List<RepayIn7DayDetails> list = new ArrayList<>();
+
+        List<Loan> loanList = loanMapper.selectLoanedByCustomerPhone(phone);
+        for (Loan loan : loanList) {
+            LoanRecordDetails details = getLoanRecordDetails(loan.getId());
+
+        }
+        return list;
     }
 
 }
