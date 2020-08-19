@@ -47,4 +47,11 @@
         and dlp.loan_id = #{loanId}
         order by plan_periods_order
     </select>
+    <select id="selectByLoanIdAndPeriods" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from d_loan_plans
+        where loan_id = #{loanId}
+        and plan_periods_order = #{periods}
+    </select>
 </mapper>

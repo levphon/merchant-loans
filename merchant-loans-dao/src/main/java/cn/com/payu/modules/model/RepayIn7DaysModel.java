@@ -22,7 +22,7 @@ public class RepayIn7DaysModel {
     /**
      * 已还期数
      */
-    private Integer repayedPeriod;
+    private Integer repaidPeriod;
 
     /**
      * 当前应还款

@@ -11,6 +11,8 @@ import java.util.List;
 @Mapper
 public interface LoanPlansMapper extends CommonBaseMapper<LoanPlans> {
 
+    LoanPlans selectByLoanIdAndPeriods(@Param("loanId") Long loanId, @Param("periods") Integer periods);
+
     List<LoanPlans> selectByLoanId(@Param("loanId") Long loanId);
 
     List<LoanPlansModel> selectDetailsByLoanId(@Param("loanId") Long loanId);

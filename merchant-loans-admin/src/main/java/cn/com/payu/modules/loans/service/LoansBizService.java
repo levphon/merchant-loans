@@ -411,7 +411,6 @@ public class LoansBizService {
 //            } else {//复审通过
 //                loan.setLoanStatus(LoanStatus.WAITING_SIGN.getCode());
 //            }
-
             loan.setLoanStatus(LoanStatus.WAITING_SIGN.getCode());
         } else if (CallbackType.RC_REFUSE.getCode().equals(req.getCallbackType())) {
             loan.setLoanStatus(LoanStatus.UNPASS.getCode());
@@ -432,11 +431,21 @@ public class LoansBizService {
         } else if (CallbackType.REFUSE_LOAN.getCode().equals(req.getCallbackType())) {
             loan.setLoanStatus(LoanStatus.REFUSE_LOAN.getCode());
         } else if (CallbackType.VOLUNTARY_REPAYMENT.getCode().equals(req.getCallbackType())) {
-            // TODO: 2020/8/10 修改还款计划还款状态
+            // 2020/8/10 修改还款计划还款状态
+            LoanPlans plans = loanPlansMapper.selectByLoanIdAndPeriods(loan.getId(), req.getPeriodOrder());
+            if (plans == null) {
+                log.warn("订单{}第{}还款计划不存在", req.getOrderNumber(), req.getPeriodOrder());
+                return 1;
+            }
+            if (req.getIsFinish()) {
+                plans.setPlanStatus(DataDictionary.RepayStatus.repayment.getCode());
+                plans.setRepaidTime(new Date());
+                plans.setUpdatedDate(plans.getRepaidTime());
+                loanPlansMapper.updateByPrimaryKeySelective(plans);
+                return 0;
+            }
         }
-
         loanMapper.updateByPrimaryKeySelective(loan);
-
         return 0;
     }
 
@@ -490,7 +499,7 @@ public class LoansBizService {
         if (CollectionUtils.isEmpty(details.getPlans())) return DataDictionary.RepayStatus.initialize.getCode();
 
         if (details.getOverduePeriod() > 0) return DataDictionary.RepayStatus.overdue.getCode();
-        if (details.getRepayedPeriod() > 0) return DataDictionary.RepayStatus.repayment.getCode();
+        if (details.getRepaidPeriod() > 0) return DataDictionary.RepayStatus.repayment.getCode();
         return DataDictionary.RepayStatus.unrepayment.getCode();
     }
 
@@ -505,8 +514,8 @@ public class LoansBizService {
 
         LoanRecordDetails details = new LoanRecordDetails();
 
-        int repaymentFlag = 0;
-        int overdueFlag = 0;
+        int repaymentCnt = 0;
+        int overdueCnt = 0;
         BigDecimal planRepayPrincipal = BigDecimal.ZERO;//本期本金
         BigDecimal planRemainPrincipal = BigDecimal.ZERO;//剩余本金
         BigDecimal planRepayTotal = BigDecimal.ZERO;//总的要还
@@ -525,7 +534,7 @@ public class LoansBizService {
                 Date next = lpm.getPlanRepayTime();
 
                 if (DataDictionary.RepayStatus.repayment.getCode().equals(lpm.getPlanStatus())) {
-                    repaymentFlag++;
+                    repaymentCnt++;
                 }
                 if (DataDictionary.RepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus())) {
 
@@ -545,7 +554,7 @@ public class LoansBizService {
                     }
                 }
                 if (DataDictionary.RepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus()) && lpm.getOverdueDays() > 0) {
-                    overdueFlag++;
+                    overdueCnt++;
 
                     lpm.setPlanStatus(DataDictionary.RepayStatus.overdue.getCode());
                 }
@@ -557,14 +566,14 @@ public class LoansBizService {
         details.setOrderNumber(loan.getOrderNumber());
         details.setAnnuity(loan.getAuditAmount() == null ? loan.getAnnuity() : loan.getAuditAmount());
         details.setLoanPeriod(loan.getAuditPeriod() == null ? loan.getLoanPeriod() : loan.getAuditPeriod());
-        details.setRepayedPeriod(repaymentFlag);
-        details.setOverduePeriod(overdueFlag);
+        details.setRepaidPeriod(repaymentCnt);
+        details.setOverduePeriod(overdueCnt);
         details.setPlanRepayPrincipal(planRepayPrincipal);
         details.setPlanRemainPrincipal(planRemainPrincipal);
         details.setPlanRepayTotal(planRepayTotal);
         details.setPlans(plansList);
-        if (repaymentFlag > 0) details.setRepayStatus(DataDictionary.RepayStatus.repayment.getCode());
-        if (overdueFlag > 0) details.setRepayStatus(DataDictionary.RepayStatus.overdue.getCode());
+        if (repaymentCnt > 0) details.setRepayStatus(DataDictionary.RepayStatus.repayment.getCode());
+        if (overdueCnt > 0) details.setRepayStatus(DataDictionary.RepayStatus.overdue.getCode());
         details.setCurrentRepayMoney(currentRepayMoney);
         details.setLastRepayDate(lastRepayDate);
         return details;

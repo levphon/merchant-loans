@@ -33,7 +33,7 @@ public class RepayIn7DayDetails {
     /**
      * 已还期数
      */
-    private Integer repayedPeriod;
+    private Integer repaidPeriod;
 
 
     /**

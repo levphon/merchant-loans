@@ -33,7 +33,7 @@ public class LoanRecordDetails {
     /**
      * 已还期数
      */
-    private Integer repayedPeriod;
+    private Integer repaidPeriod;
 
     /**
      * 逾期期数

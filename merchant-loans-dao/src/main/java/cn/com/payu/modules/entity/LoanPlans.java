@@ -40,6 +40,13 @@ public class LoanPlans extends BaseEntity {
     private Date planRepayTime;
 
     /**
+     * 实际还款日期
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @Column(name = "repaid_time")
+    private Date repaidTime;
+
+    /**
      * 应还本金
      */
     @Column(name = "plan_repay_principal")
