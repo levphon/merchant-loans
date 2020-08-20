@@ -31,20 +31,14 @@ public class RepayIn7DayDetails {
     private Date loanDate;
 
     /**
-     * 已还期数
+     * 剩余本金合计（剩余全部本金）
      */
-    private Integer repaidPeriod;
-
-
-    /**
-     * 剩余本金
-     */
-    private BigDecimal planRemainPrincipal;
+    private BigDecimal totalRemainPrincipal;
 
     /**
-     * 全部应还
+     * 应还合计（剩余全部应还）
      */
-    private BigDecimal planRemainTotal;
+    private BigDecimal totalRemainRepayAmount;
 
     private List<LoanPlansModel> plans;
 

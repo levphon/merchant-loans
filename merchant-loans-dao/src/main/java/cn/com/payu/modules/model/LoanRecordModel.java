@@ -36,20 +36,30 @@ public class LoanRecordModel {
     private Date loanDate;
 
     /**
-     * 当前应还款
+     * 当期期数
      */
-    private BigDecimal currentRepayMoney;
+    private Integer currentPeriod;
 
     /**
-     * 应还款总额
+     * 当期应还金额
      */
-    private BigDecimal totalRepayAmount;
+    private BigDecimal currentPeriodRepayMoney;
 
     /**
-     * 最近还款日
+     * 当期还款日
      */
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date lastRepayDate;
+    private Date currentPeriodRepayDate;
+
+    /**
+     * 当前应还款总额(当期+逾期)
+     */
+    private BigDecimal currentRepayTotalMoney;
+
+    /**
+     * 应还合计（剩余全部应还）
+     */
+    private BigDecimal totalRemainRepayAmount;
 
     /**
      * 还款状态

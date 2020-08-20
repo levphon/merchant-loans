@@ -52,7 +52,7 @@ public class OrderService {
 
             Integer repayStatus = loansBizService.getRepayStatus(o.getId());
             o.setRepayStatus(repayStatus);
-            o.setRepayStatusDesc(DataDictionary.RepayStatus.getValueByCode(o.getRepayStatus()));
+            o.setRepayStatusDesc(DataDictionary.LoanRepayStatus.getValueByCode(o.getRepayStatus()));
         }
         return new PageInfo<>(list);
     }
@@ -67,7 +67,7 @@ public class OrderService {
 
             Integer repayStatus = loansBizService.getRepayStatus(o.getId());
             o.setRepayStatus(repayStatus);
-            o.setRepayStatusDesc(DataDictionary.RepayStatus.getValueByCode(o.getRepayStatus()));
+            o.setRepayStatusDesc(DataDictionary.LoanRepayStatus.getValueByCode(o.getRepayStatus()));
         }
         return list;
     }

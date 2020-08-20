@@ -44,7 +44,7 @@ public class MyController extends BaseController {
 
     @GetMapping(value = "/repayIn7days/details")
     public R repayIn7daysDetails(@RequestParam Long loanId) {
-        List<RepayIn7DayDetails> list = loansBizService.repayIn7daysDetails(getAccount());
-        return R.ok().data(list);
+        RepayIn7DayDetails details = loansBizService.repayIn7daysDetails(loanId);
+        return R.ok().data(details);
     }
 }

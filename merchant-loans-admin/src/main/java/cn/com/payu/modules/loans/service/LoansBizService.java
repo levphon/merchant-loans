@@ -438,7 +438,7 @@ public class LoansBizService {
                 return 1;
             }
             if (req.getIsFinish()) {
-                plans.setPlanStatus(DataDictionary.RepayStatus.repayment.getCode());
+                plans.setPlanStatus(DataDictionary.PlansRepayStatus.repayment.getCode());
                 plans.setRepaidTime(new Date());
                 plans.setUpdatedDate(plans.getRepaidTime());
                 loanPlansMapper.updateByPrimaryKeySelective(plans);
@@ -496,11 +496,9 @@ public class LoansBizService {
 
         LoanRecordDetails details = getLoanRecordDetails(loanId);
 
-        if (CollectionUtils.isEmpty(details.getPlans())) return DataDictionary.RepayStatus.initialize.getCode();
+        if (CollectionUtils.isEmpty(details.getPlans())) return DataDictionary.LoanRepayStatus.initialize.getCode();
 
-        if (details.getOverduePeriod() > 0) return DataDictionary.RepayStatus.overdue.getCode();
-        if (details.getRepaidPeriod() > 0) return DataDictionary.RepayStatus.repayment.getCode();
-        return DataDictionary.RepayStatus.unrepayment.getCode();
+        return details.getRepayStatus();
     }
 
     /**
@@ -516,13 +514,16 @@ public class LoansBizService {
 
         int repaymentCnt = 0;
         int overdueCnt = 0;
-        BigDecimal planRepayPrincipal = BigDecimal.ZERO;//本期本金
-        BigDecimal planRemainPrincipal = BigDecimal.ZERO;//剩余本金
-        BigDecimal planRepayTotal = BigDecimal.ZERO;//总的要还
-        BigDecimal currentRepayMoney = BigDecimal.ZERO;//逾期未还的+当期的未还
-        Date lastRepayDate = null;
+        Integer currentPeriod = 0;//本期期数
+        BigDecimal currentPeriodRepayMoney = BigDecimal.ZERO;//本期应还金额
+        BigDecimal currentPeriodPrincipal = BigDecimal.ZERO;//本期本金
+        Date currentPeriodRepayDate = null;
+        BigDecimal currentRepayTotalMoney = BigDecimal.ZERO;//逾期未还的+当期的未还
+        BigDecimal currentRepayTotalPrincipal = BigDecimal.ZERO;//逾期未还本金+当期的未还本金
+        BigDecimal totalRemainPrincipal = BigDecimal.ZERO;//总的剩余本金
+        BigDecimal totalRemainRepayAmount = BigDecimal.ZERO;//总的剩余要还
 
-        details.setRepayStatus(DataDictionary.RepayStatus.initialize.getCode());
+        details.setRepayStatus(DataDictionary.LoanRepayStatus.normal.getCode());
 
         List<LoanPlansModel> plansList = loanPlansMapper.selectDetailsByLoanId(loan.getId());
         if (!CollectionUtils.isEmpty(plansList)) {
@@ -533,32 +534,37 @@ public class LoansBizService {
 
                 Date next = lpm.getPlanRepayTime();
 
-                if (DataDictionary.RepayStatus.repayment.getCode().equals(lpm.getPlanStatus())) {
+                if (DataDictionary.PlansRepayStatus.repayment.getCode().equals(lpm.getPlanStatus())) {
                     repaymentCnt++;
                 }
-                if (DataDictionary.RepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus())) {
+                if (DataDictionary.PlansRepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus())) {
 
-                    planRemainPrincipal = planRemainPrincipal.add(lpm.getPlanRepayPrincipal());
-                    planRepayTotal = planRepayTotal.add(lpm.getPlanRepayTotal());
+                    totalRemainPrincipal = totalRemainPrincipal.add(lpm.getPlanRepayPrincipal());
 
-                    currentRepayMoney = currentRepayMoney.add(lpm.getPlanRepayTotal());
+                    totalRemainRepayAmount = totalRemainRepayAmount.add(lpm.getPlanRepayTotal());
+
+                    currentRepayTotalMoney = currentRepayTotalMoney.add(lpm.getPlanRepayTotal());
+                    currentRepayTotalPrincipal = currentRepayTotalPrincipal.add(lpm.getPlanRepayPrincipal());
                     //还款时间当前时间
                     if (next.after(curr) || next.equals(curr)) {
-                        if (lastRepayDate == null) {
-                            lastRepayDate = next;
-
-                            planRepayPrincipal = lpm.getPlanRepayPrincipal();
+                        if (currentPeriodRepayDate == null) {
+                            currentPeriodRepayDate = next;
+                            currentPeriod = lpm.getPlanPeriodsOrder();
+                            currentPeriodRepayMoney = lpm.getPlanRepayTotal();
+                            currentPeriodPrincipal = lpm.getPlanRepayPrincipal();
                         } else {
-                            currentRepayMoney = currentRepayMoney.subtract(lpm.getPlanRepayTotal());
+                            //减去多加金额
+                            currentRepayTotalMoney = currentRepayTotalMoney.subtract(lpm.getPlanRepayTotal());
+                            currentRepayTotalPrincipal = currentRepayTotalPrincipal.subtract(lpm.getPlanRepayPrincipal());
                         }
                     }
                 }
-                if (DataDictionary.RepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus()) && lpm.getOverdueDays() > 0) {
+                if (DataDictionary.PlansRepayStatus.unrepayment.getCode().equals(lpm.getPlanStatus()) && lpm.getOverdueDays() > 0) {
                     overdueCnt++;
 
-                    lpm.setPlanStatus(DataDictionary.RepayStatus.overdue.getCode());
+                    lpm.setPlanStatus(DataDictionary.PlansRepayStatus.overdue.getCode());
                 }
-                lpm.setPlanStatusDesc(DataDictionary.RepayStatus.getValueByCode(lpm.getPlanStatus()));
+                lpm.setPlanStatusDesc(DataDictionary.PlansRepayStatus.getValueByCode(lpm.getPlanStatus()));
             }
         }
 
@@ -566,16 +572,31 @@ public class LoansBizService {
         details.setOrderNumber(loan.getOrderNumber());
         details.setAnnuity(loan.getAuditAmount() == null ? loan.getAnnuity() : loan.getAuditAmount());
         details.setLoanPeriod(loan.getAuditPeriod() == null ? loan.getLoanPeriod() : loan.getAuditPeriod());
+        details.setLoanDate(loan.getCreatedDate());
+
         details.setRepaidPeriod(repaymentCnt);
         details.setOverduePeriod(overdueCnt);
-        details.setPlanRepayPrincipal(planRepayPrincipal);
-        details.setPlanRemainPrincipal(planRemainPrincipal);
-        details.setPlanRepayTotal(planRepayTotal);
+
         details.setPlans(plansList);
-        if (repaymentCnt > 0) details.setRepayStatus(DataDictionary.RepayStatus.repayment.getCode());
-        if (overdueCnt > 0) details.setRepayStatus(DataDictionary.RepayStatus.overdue.getCode());
-        details.setCurrentRepayMoney(currentRepayMoney);
-        details.setLastRepayDate(lastRepayDate);
+
+        //逾期
+        if (overdueCnt > 0)
+            details.setRepayStatus(DataDictionary.LoanRepayStatus.overdue.getCode());
+        //结清
+        if (LoanStatus.SETTLED.getCode().equals(loan.getLoanStatus()))
+            details.setRepayStatus(DataDictionary.LoanRepayStatus.settled.getCode());
+
+        //当期
+        details.setCurrentPeriod(currentPeriod);
+        details.setCurrentPeriodRepayMoney(currentPeriodRepayMoney);
+        details.setCurrentPeriodPrincipal(currentPeriodPrincipal);
+        details.setCurrentPeriodRepayDate(currentPeriodRepayDate);
+        //当期+逾期
+        details.setCurrentRepayTotalMoney(currentRepayTotalMoney);
+        details.setCurrentRepayTotalPrincipal(currentRepayTotalPrincipal);
+        //剩余
+        details.setTotalRemainPrincipal(totalRemainPrincipal);
+        details.setTotalRemainRepayAmount(totalRemainRepayAmount);
         return details;
     }
 
@@ -590,6 +611,7 @@ public class LoansBizService {
             lrm.setAnnuity(loan.getAuditAmount());
             lrm.setLoanPeriod(loan.getAuditPeriod());
             lrm.setLoanDate(loan.getCreatedDate());
+
             setLoanRecordModel(lrm);
 
             list.add(lrm);
@@ -603,12 +625,16 @@ public class LoansBizService {
 
         if (CollectionUtils.isEmpty(details.getPlans())) return;
 
-        lrm.setRepayStatus(details.getRepayStatus());
-        lrm.setRepayStatusDesc(DataDictionary.RepayStatus.getValueByCode(lrm.getRepayStatus()));
+        lrm.setCurrentPeriod(details.getCurrentPeriod());
+        lrm.setCurrentPeriodRepayMoney(details.getCurrentPeriodRepayMoney());
+        lrm.setCurrentPeriodRepayDate(details.getCurrentPeriodRepayDate());
 
-        lrm.setCurrentRepayMoney(details.getCurrentRepayMoney());
-        lrm.setLastRepayDate(details.getLastRepayDate());
-        lrm.setTotalRepayAmount(details.getPlanRepayTotal());
+        lrm.setCurrentRepayTotalMoney(details.getCurrentRepayTotalMoney());
+        lrm.setTotalRemainRepayAmount(details.getTotalRemainRepayAmount());
+
+        lrm.setRepayStatus(details.getRepayStatus());
+        lrm.setRepayStatusDesc(DataDictionary.LoanRepayStatus.getValueByCode(lrm.getRepayStatus()));
+
     }
 
     public LoanRecordDetails loanListDetails(Long loanId) {
@@ -622,19 +648,58 @@ public class LoansBizService {
         for (Loan loan : loanList) {
             LoanRecordDetails details = getLoanRecordDetails(loan.getId());
 
+            RepayIn7DaysModel r7m = new RepayIn7DaysModel();
+            r7m.setLoanId(loan.getId());
+            r7m.setAnnuity(details.getAnnuity());
+            r7m.setLoanPeriod(details.getLoanPeriod());
+            r7m.setCurrentPeriod(details.getCurrentPeriod());
+            r7m.setCurrentPeriodRepayMoney(details.getCurrentPeriodRepayMoney());
+            r7m.setCurrentPeriodRepayDate(details.getCurrentPeriodRepayDate());
+
+            r7m.setCurrentRepayTotalMoney(details.getCurrentRepayTotalMoney());
+            r7m.setTotalRemainRepayAmount(details.getTotalRemainRepayAmount());
+
+            r7m.setRepayStatus(details.getRepayStatus());
+            r7m.setRepayStatusDesc(DataDictionary.LoanRepayStatus.getValueByCode(r7m.getRepayStatus()));
+
+            boolean plansIn7DaysFlag = false;
+            List<LoanPlansModel> plans = details.getPlans();
+            if (!CollectionUtils.isEmpty(plans)) {
+                for (LoanPlansModel lpm : plans) {
+                    if ((-lpm.getOverdueDays()) <= 7) {
+                        plansIn7DaysFlag = true;
+                        break;
+                    }
+                }
+            }
+            if (plansIn7DaysFlag) list.add(r7m);
         }
         return list;
     }
 
-    public List<RepayIn7DayDetails> repayIn7daysDetails(String phone) {
-        List<RepayIn7DayDetails> list = new ArrayList<>();
+    public RepayIn7DayDetails repayIn7daysDetails(Long loanId) {
+        LoanRecordDetails loanRecordDetails = getLoanRecordDetails(loanId);
 
-        List<Loan> loanList = loanMapper.selectLoanedByCustomerPhone(phone);
-        for (Loan loan : loanList) {
-            LoanRecordDetails details = getLoanRecordDetails(loan.getId());
-
+        RepayIn7DayDetails details = new RepayIn7DayDetails();
+        details.setOrderNumber(loanRecordDetails.getOrderNumber());
+        details.setLoanPeriod(loanRecordDetails.getLoanPeriod());
+        details.setAnnuity(loanRecordDetails.getAnnuity());
+        details.setLoanDate(loanRecordDetails.getLoanDate());
+        //剩余
+        details.setTotalRemainPrincipal(loanRecordDetails.getTotalRemainPrincipal());
+        details.setTotalRemainRepayAmount(loanRecordDetails.getTotalRemainRepayAmount());
+        //7天待还
+        List<LoanPlansModel> plansIn7Days = new ArrayList<>();
+        List<LoanPlansModel> plans = loanRecordDetails.getPlans();
+        if (!CollectionUtils.isEmpty(plans)) {
+            for (LoanPlansModel lpm : plans) {
+                if ((-lpm.getOverdueDays()) <= 7) {
+                    plansIn7Days.add(lpm);
+                }
+            }
         }
-        return list;
+        details.setPlans(plansIn7Days);
+        return details;
     }
 
 }

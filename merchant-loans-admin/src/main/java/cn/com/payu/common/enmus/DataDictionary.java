@@ -95,7 +95,61 @@ public interface DataDictionary {
         }
     }
 
-    enum RepayStatus implements DataDictionary {
+    enum LoanRepayStatus implements DataDictionary {
+        initialize {
+            @Override
+            public Integer getCode() {
+                return 0;
+            }
+
+            @Override
+            public String getValue() {
+                return "--";
+            }
+        },
+        normal {
+            @Override
+            public Integer getCode() {
+                return 1;
+            }
+
+            @Override
+            public String getValue() {
+                return "正常";
+            }
+        }, settled {
+            @Override
+            public Integer getCode() {
+                return 2;
+            }
+
+            @Override
+            public String getValue() {
+                return "已结清";
+            }
+        }, overdue {
+            @Override
+            public Integer getCode() {
+                return 3;
+            }
+
+            @Override
+            public String getValue() {
+                return "已逾期";
+            }
+        };
+
+        public static String getValueByCode(Integer code) {
+            for (LoanRepayStatus status : LoanRepayStatus.values()) {
+                if (status.getCode().equals(code)) {
+                    return status.getValue();
+                }
+            }
+            return null;
+        }
+    }
+
+    enum PlansRepayStatus implements DataDictionary {
         initialize {
             @Override
             public Integer getCode() {
@@ -140,7 +194,7 @@ public interface DataDictionary {
         };
 
         public static String getValueByCode(Integer code) {
-            for (RepayStatus status : RepayStatus.values()) {
+            for (PlansRepayStatus status : PlansRepayStatus.values()) {
                 if (status.getCode().equals(code)) {
                     return status.getValue();
                 }

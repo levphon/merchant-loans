@@ -12,7 +12,12 @@ public class RepayIn7DaysModel {
     /**
      * 借款id
      */
-    private Integer loanId;
+    private Long loanId;
+
+    /**
+     * 客户贷款金额(单位：元)
+     */
+    private Integer annuity;
 
     /**
      * 客户申请期限，详见字典说明
@@ -20,30 +25,30 @@ public class RepayIn7DaysModel {
     private Integer loanPeriod;
 
     /**
-     * 已还期数
+     * 当前应还期数
      */
-    private Integer repaidPeriod;
-
-    /**
-     * 当前应还款
-     */
-    private BigDecimal currentRepayMoney;
+    private Integer currentPeriod;
 
     /**
      * 本期应还
      */
-    private Integer currentPeriodRepayMoney;
+    private BigDecimal currentPeriodRepayMoney;
 
     /**
-     * 应还款总额
-     */
-    private BigDecimal totalRepayAmount;
-
-    /**
-     * 最近还款日
+     * 当期还款日
      */
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date lastRepayDate;
+    private Date currentPeriodRepayDate;
+
+    /**
+     * 当前应还款总额(当期+逾期)
+     */
+    private BigDecimal currentRepayTotalMoney;
+
+    /**
+     * 应还合计（剩余全部应还）
+     */
+    private BigDecimal totalRemainRepayAmount;
 
     /**
      * 还款状态
