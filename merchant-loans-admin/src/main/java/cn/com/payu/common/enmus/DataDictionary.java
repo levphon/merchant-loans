@@ -63,7 +63,7 @@ public interface DataDictionary {
     }
 
     enum BindStatus implements DataDictionary {
-        bound {
+        unbound {
             @Override
             public Integer getCode() {
                 return 1;
@@ -71,9 +71,9 @@ public interface DataDictionary {
 
             @Override
             public String getValue() {
-                return "绑定";
+                return "未绑定";
             }
-        }, unbound {
+        }, bound {
             @Override
             public Integer getCode() {
                 return 2;
@@ -81,7 +81,7 @@ public interface DataDictionary {
 
             @Override
             public String getValue() {
-                return "未绑定";
+                return "已绑定";
             }
         };
 

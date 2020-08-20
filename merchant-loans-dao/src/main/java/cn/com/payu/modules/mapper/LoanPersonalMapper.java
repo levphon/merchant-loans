@@ -5,7 +5,7 @@ import com.glsx.plat.mybatis.mapper.CommonBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-@Mapper
+//@Mapper
 public interface LoanPersonalMapper extends CommonBaseMapper<LoanPersonal> {
 
     LoanPersonal selectByLoanId(@Param("loanId") Long loanId);

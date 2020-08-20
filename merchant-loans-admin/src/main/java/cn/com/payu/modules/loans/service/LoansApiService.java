@@ -43,7 +43,7 @@ public class LoansApiService {
         log.info("【商户贷——查询签署状态】请求参数: {}", JSON.toJSONString(req, true));
         ApplymentGetSignStateResp resp = accessUtils.accessByPost(config.getApplymentGetSignStateUrl(), req, ApplymentGetSignStateResp.class);
         log.info("【商户贷——查询签署状态】响应数据: {}", JSON.toJSONString(resp, true));
-        checkRespResult(resp);
+//        checkRespResult(resp);
         return resp;
     }
 

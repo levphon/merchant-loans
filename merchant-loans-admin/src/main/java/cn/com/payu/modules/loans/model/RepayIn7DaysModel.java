@@ -1,4 +1,4 @@
-package cn.com.payu.modules.model;
+package cn.com.payu.modules.loans.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

@@ -1,8 +1,1 @@
-{
-  "sNo": "MLS0002",
-  "phone": "13800138001",
-  "provCode": "44",
-  "cityCode": "4",
-  "areaCode": "",
-  "address": ""
-}
+{"salesman":"1231","loanData":{"product":"佰商贷","productId":13,"annuity":"123","loanPurpose":"1","loanPurposeName":"日常消费","periods":"6","periodsName":"6月"},"personalData":{"name":"122","certificateNumber":"430821554545455555","phoneNumber":"18262555555","email":"12312@qq.com","educationInfo":"1","educationInfoName":"硕士及以上","marriageInfo":"1","marriageInfoName":"未婚"},"addressData":{"togetherDwell":"1","togetherDwellName":"父母","housingType":"1","housingName":"租用","liveDate":1597420800000,"liveDateName":"2020-08-15","presentProvince":"14","presentCity":"1405","presentRegion":"140525","monthRent":"12312","presentAddress":"1231231"},"contactData":{"contactName":"123123","contactNumber":"18204555555","relation":"1","relationName":"父母","isKnow":1,"isKnowName":"知晓"},"jobData":{"businessType":2,"businessTypeName":"生意类","companyName":"123123","operateTime":1597680000000,"operateTimeName":"2020-08-18","industryCode":1,"industryCodeName":"计算机/互联网/通信/电子电子/半导体/集成电路","contactNumber":"123123","monthTurnover":"1231","operateAddress":"1231231231213"},"incomeData":{"type":1,"typeName":"对公","privateIncome":{"nearlyOneMonth":"12","nearlyTwoMonth":"12312","nearlyThirdMonth":"12312","nearlyFourMonth":"1231","nearlyFiveMonth":"23123","nearlySixMonth":"123123","interestAmount":"1231"}},"pedestrianData":{"account":"12312","password":"121231","authorizationCode":"12312","expiredTime":1262275200000,"expiredTimeName":"2010-01-01"},"documentData":{"idCardFront":"/files/282276514056183809.png","idCardBack":"/files/282276523539505152.png"}}

@@ -9,12 +9,12 @@
 
 
 ###########init variable#############
-JAVA_HOME="/app/soft/jdk1.8.0_144"
-SERVER_PORT="8820"
+JAVA_HOME="/app/soft/jdk1.8"
+SERVER_PORT="8808"
 DUBBO_PORT=""
 JMX_ARG="-Xmx1024m -Xms512m -Xmn256m"
-MAIN="cn.com.glsx.Application"
-SERVER_NAME="glsx-rest-admin"
+MAIN="cn.com.payu.Application"
+SERVER_NAME="mloans"
 
 ###########end#######################
 

@@ -5,7 +5,7 @@ import com.glsx.plat.mybatis.mapper.CommonBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-@Mapper
+//@Mapper
 public interface BaseProvinceMapper extends CommonBaseMapper<BaseProvince> {
 
     BaseProvince selectByCode(@Param("provCode") String provCode);

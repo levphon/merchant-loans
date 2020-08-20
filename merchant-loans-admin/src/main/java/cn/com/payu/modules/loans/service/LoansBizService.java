@@ -5,11 +5,12 @@ import cn.com.payu.common.enmus.DataDictionary;
 import cn.com.payu.common.enmus.LoanStatus;
 import cn.com.payu.common.utils.idcardUtil.IdcardInfoExtractor;
 import cn.com.payu.modules.entity.*;
-import cn.com.payu.modules.loans.model.LoansModel;
+import cn.com.payu.modules.loans.model.*;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.mapper.*;
-import cn.com.payu.modules.model.*;
+import cn.com.payu.modules.model.LoanPlansModel;
+import cn.com.payu.modules.model.OrderModel;
 import com.glsx.plat.common.utils.DateUtils;
 import com.glsx.plat.exception.BusinessException;
 import com.glsx.plat.redis.service.GainIdService;
@@ -333,6 +334,7 @@ public class LoansBizService {
         req.setOrderNumber(orderNumber);
         req.setSignType(signType);
         EsignGetSignUrlResp resp = loansApiService.esignGetSignUrl(req);
+
         return resp.getData();
     }
 
@@ -485,6 +487,17 @@ public class LoansBizService {
             model.setLoanStatus(om.getLoanStatus());
             model.setLoanStatusDesc(LoanStatus.getNameByCode(om.getLoanStatus()));
             model.setBindStatus(om.getBindStatus());
+
+            ApplymentGetSignStateRespData signStateRespData = this.applymentGetSignState(om.getOrderNumber());
+            if (signStateRespData != null) {
+                model.setProtocolStatus(signStateRespData.getProtocolStatus());
+                model.setProtocolMsg(signStateRespData.getProtocolMsg());
+                model.setContractStatus(signStateRespData.getContractStatus());
+                model.setContractMsg(signStateRespData.getContractMsg());
+            } else {
+                model.setProtocolMsg("--");
+                model.setContractMsg("--");
+            }
 
             if (om.getBindStatus() == null) model.setBindStatus(DataDictionary.BindStatus.unbound.getCode());
             model.setBindStatusDesc(DataDictionary.BindStatus.getValueByCode(om.getBindStatus()));

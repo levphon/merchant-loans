@@ -1,6 +1,7 @@
 package cn.com.payu;
 
 import com.glsx.plat.context.EnableRestAdmin;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableMBeanExport;
@@ -17,6 +18,7 @@ import static java.util.TimeZone.getTimeZone;
  * @author payu
  */
 @EnableRestAdmin
+@MapperScan(basePackages = "cn.com.payu.modules.mapper")
 @EnableTransactionManagement
 @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)
 @SpringBootApplication

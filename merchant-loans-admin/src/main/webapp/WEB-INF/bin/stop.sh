@@ -7,7 +7,7 @@
 #                                  #
 ####################################
 
-SERVER_NAME="glsx-rest-admin"
+SERVER_NAME="mloans"
 PID_DIR="/app/soft/java_project/pids"
 
 cd `dirname $0`

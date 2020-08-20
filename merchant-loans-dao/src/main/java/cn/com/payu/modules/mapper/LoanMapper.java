@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
+//@Mapper
 public interface LoanMapper extends CommonBaseMapper<Loan> {
 
     Loan selectByOrderNumber(@Param("orderNumber") String orderNumber);

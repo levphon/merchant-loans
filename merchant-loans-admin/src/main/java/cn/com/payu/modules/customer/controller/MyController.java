@@ -2,10 +2,10 @@ package cn.com.payu.modules.customer.controller;
 
 import cn.com.payu.modules.BaseController;
 import cn.com.payu.modules.loans.service.LoansBizService;
-import cn.com.payu.modules.model.LoanRecordDetails;
-import cn.com.payu.modules.model.LoanRecordModel;
-import cn.com.payu.modules.model.RepayIn7DayDetails;
-import cn.com.payu.modules.model.RepayIn7DaysModel;
+import cn.com.payu.modules.loans.model.LoanRecordDetails;
+import cn.com.payu.modules.loans.model.LoanRecordModel;
+import cn.com.payu.modules.loans.model.RepayIn7DayDetails;
+import cn.com.payu.modules.loans.model.RepayIn7DaysModel;
 import com.glsx.plat.core.web.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

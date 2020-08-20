@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.payu.modules.mapper.ReportMapper">
+
+    <select id="selectTrendData" resultType="cn.com.payu.modules.model.RowsModel">
+        select DATE_FORMAT(dl.created_date,'%Y-%m') x,count(*) y
+        from d_loan dl
+        where dl.del_flag = 0
+        and dl.loan_status in (10,12)
+        <if test="sDate != null and sDate != '' and eDate != null and eDate != ''">
+            and DATE(dl.created_date) between #{sDate} and #{eDate}
+        </if>
+        group by date_format(dl.created_date, '%Y-%m')
+        order by date_format(dl.created_date, '%Y-%m') desc
+    </select>
+
+    <select id="selectRankData" resultType="cn.com.payu.modules.model.RankModel">
+        select ds.name salesmanName, dl.salesman_no salesmanNo, count(*) cnt
+        from d_loan dl
+        left join d_salesman ds on ds.s_no = dl.salesman_no
+        where dl.del_flag = 0
+        and dl.loan_status in (10,12)
+        <if test="sDate != null and sDate != '' and eDate != null and eDate != ''">
+            and DATE(dl.created_date) between #{sDate} and #{eDate}
+        </if>
+        group by dl.salesman_no
+        order by count(*) desc
+    </select>
+</mapper>

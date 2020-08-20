@@ -8,6 +8,7 @@ import cn.com.payu.modules.loans.service.LoansApiService;
 import cn.com.payu.modules.loans.service.LoansBizService;
 import com.alibaba.fastjson.JSON;
 import com.glsx.plat.redis.service.GainIdService;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -405,9 +406,9 @@ public class DemoApplicationTests {
     @Test
     public void test13() {
         ApplymentGetSignStateReq req = new ApplymentGetSignStateReq();
-        req.setOrderNumber("B20200810165759000022");
+        req.setOrderNumber("B20200820205634000034");
         ApplymentGetSignStateResp resp = loansApiService.applymentGetSignState(req);
-        System.out.println(resp);
+        System.out.println(new Gson().toJson(resp));
     }
 
     @Test
@@ -419,7 +420,7 @@ public class DemoApplicationTests {
     @Test
     public void test14() {
         ApplymentQueryOrderReq req = new ApplymentQueryOrderReq();
-        req.setOrderNumber("B20200810165759000022");
+        req.setOrderNumber("B20200820205634000034");
         ApplymentQueryOrderResp resp = loansApiService.applymentQueryOrder(req);
         System.out.println(resp);
     }
@@ -447,7 +448,7 @@ public class DemoApplicationTests {
     @Test
     public void test18() {
         EsignGetSignUrlReq req = new EsignGetSignUrlReq();
-        req.setOrderNumber("orderNumber");
+        req.setOrderNumber("B20200820205634000034");
         req.setSignType(1);
         EsignGetSignUrlResp resp = loansApiService.esignGetSignUrl(req);
         System.out.println(resp);

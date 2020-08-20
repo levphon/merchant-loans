@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
+//@Mapper
 public interface BaseCityMapper extends CommonBaseMapper<BaseCity> {
 
     List<BaseCity> selectByProvCode(@Param("provCode") String provCode);

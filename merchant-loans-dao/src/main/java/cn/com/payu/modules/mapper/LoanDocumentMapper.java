@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
+//@Mapper
 public interface LoanDocumentMapper extends CommonBaseMapper<LoanDocument> {
 
     List<LoanDocument> selectAllByLoanId(@Param("loanId") Long loanId);
