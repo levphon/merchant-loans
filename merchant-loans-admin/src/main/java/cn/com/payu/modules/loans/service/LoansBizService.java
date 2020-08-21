@@ -11,6 +11,7 @@ import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.mapper.*;
 import cn.com.payu.modules.model.LoanPlansModel;
 import cn.com.payu.modules.model.OrderModel;
+import com.alibaba.excel.util.StringUtils;
 import com.glsx.plat.common.utils.DateUtils;
 import com.glsx.plat.exception.BusinessException;
 import com.glsx.plat.redis.service.GainIdService;
@@ -61,6 +62,9 @@ public class LoansBizService {
 
         req.setOrderNumber(orderNumber);
 
+        IdcardInfoExtractor ie = new IdcardInfoExtractor(req.getPersonalData().getCertificateNumber());
+        req.getPersonalData().setGender(ie.getGender());
+
         //执行进件
         ApplymentIndexResp resp = loansApiService.applymentIndex(req);
 
@@ -93,7 +97,6 @@ public class LoansBizService {
         loanPersonal.setLoanId(loan.getId());
         loanPersonal.setPhoneNumber(phone);
         loanPersonal.setCertificateType(1);
-        IdcardInfoExtractor ie = new IdcardInfoExtractor(loanPersonal.getCertificateNumber());
         loanPersonal.setGender(ie.getGender());
 
         loanAddress.setLoanId(loan.getId());
@@ -398,10 +401,13 @@ public class LoansBizService {
             log.warn("进件订单{}不存在", req.getOrderNumber());
             return 1;
         }
+        if (!CallbackType.APPLY_DATA_CHECK.getCode().equals(req.getCallbackType())) {
+            if (StringUtils.isEmpty(req.getApplyNumber())) throw BusinessException.create(400, "ApplyNumber不能为空");
+        }
 
         log.warn("订单{}回调{}", req.getOrderNumber(), req.getDescription());
         if (CallbackType.APPLY_DATA_CHECK.getCode().equals(req.getCallbackType())) {
-
+            loan.setLoanStatus(LoanStatus.UNPASS.getCode());
         } else if (CallbackType.APPLY_SUCCESS.getCode().equals(req.getCallbackType())) {
             loan.setApplyNumber(req.getApplyNumber());//对方订单编号
             loan.setAuditAmount(req.getAuditAmount());//审核额度

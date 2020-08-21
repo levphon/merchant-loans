@@ -28,8 +28,8 @@ public abstract class AbstractApiCallbackReq {
     //商户订单号
     @NotBlank(message = "商户订单号不能为空")
     private String orderNumber;
-    //我方订单号
-    @NotBlank(message = "订单号不能为空")
+    //对方订单号,审核不通过这个为空
+//    @NotBlank(message = "订单号不能为空")
     private String applyNumber;
 
     //业务类型描述
