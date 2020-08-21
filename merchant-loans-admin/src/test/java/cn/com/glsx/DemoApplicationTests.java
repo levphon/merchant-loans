@@ -406,7 +406,7 @@ public class DemoApplicationTests {
     @Test
     public void test13() {
         ApplymentGetSignStateReq req = new ApplymentGetSignStateReq();
-        req.setOrderNumber("B20200820205634000034");
+        req.setOrderNumber("B20200821145700000039");
         ApplymentGetSignStateResp resp = loansApiService.applymentGetSignState(req);
         System.out.println(new Gson().toJson(resp));
     }
@@ -420,7 +420,7 @@ public class DemoApplicationTests {
     @Test
     public void test14() {
         ApplymentQueryOrderReq req = new ApplymentQueryOrderReq();
-        req.setOrderNumber("B20200820205634000034");
+        req.setOrderNumber("B20200821145700000039");
         ApplymentQueryOrderResp resp = loansApiService.applymentQueryOrder(req);
         System.out.println(resp);
     }
@@ -428,7 +428,7 @@ public class DemoApplicationTests {
     @Test
     public void test15() {
         ApplymentQueryPlansReq req = new ApplymentQueryPlansReq();
-        req.setOrderNumber("B20200810165759000022");
+        req.setOrderNumber("B20200821145700000039");
         ApplymentQueryPlansResp resp = loansApiService.applymentQueryplans(req);
         System.out.println(resp);
     }
