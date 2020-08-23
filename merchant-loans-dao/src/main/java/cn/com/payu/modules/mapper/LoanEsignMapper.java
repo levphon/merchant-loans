@@ -12,4 +12,8 @@ public interface LoanEsignMapper extends CommonBaseMapper<LoanEsign> {
 
     List<LoanEsign> selectByLoanId(@Param("loanId") Long loanId);
 
+    LoanEsign selectByLoanIdAndSignType(@Param("loanId") Long loanId, @Param("signType") Integer signType);
+
+    int insertOrUpdate(LoanEsign esign);
+
 }

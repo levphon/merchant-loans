@@ -30,6 +30,7 @@ public class LoanEsign extends BaseEntity {
     /**
      * 电子签类型：1授权书，2电子合同
      */
-    private Integer type;
+    @Column(name = "sign_type")
+    private Integer signType;
 
 }

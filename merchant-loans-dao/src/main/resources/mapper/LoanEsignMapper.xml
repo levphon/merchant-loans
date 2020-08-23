@@ -9,7 +9,7 @@
         <result column="loan_id" jdbcType="BIGINT" property="loanId"/>
         <result column="url" jdbcType="VARCHAR" property="url"/>
         <result column="short_url" jdbcType="VARCHAR" property="shortUrl"/>
-        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="sign_type" jdbcType="INTEGER" property="signType"/>
         <result column="enable_status" jdbcType="INTEGER" property="enableStatus"/>
         <result column="del_flag" jdbcType="INTEGER" property="delFlag"/>
         <result column="created_date" jdbcType="TIMESTAMP" property="createdDate"/>
@@ -21,14 +21,38 @@
         <!--
           WARNING - @mbg.generated
         -->
-        id, loan_id, url, short_url, type, enable_status, del_flag, created_date, created_by, updated_date,
+        id, loan_id, url, short_url, sign_type, enable_status, del_flag, created_date, created_by, updated_date,
         updated_by
     </sql>
+
+    <insert id="insertOrUpdate" parameterType="cn.com.payu.modules.entity.LoanEsign">
+        insert into d_loan_esign(loan_id, url, short_url, enable_status, del_flag, created_date)
+        values (
+                #{loanId,jdbcType=INTEGER},
+                #{url,jdbcType=VARCHAR},
+                #{shortUrl,jdbcType=VARCHAR},
+                #{enableStatus,jdbcType=INTEGER},
+                #{delFlag,jdbcType=INTEGER},
+                sysdate()
+               )
+        on duplicate key update
+        url = #{url,jdbcType=VARCHAR},
+        short_url = #{shortUrl,jdbcType=VARCHAR},
+        updated_date = sysdate()
+    </insert>
 
     <select id="selectByLoanId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from d_loan_esign
         where loan_id = #{loanId}
+    </select>
+
+    <select id="selectByLoanIdAndSignType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from d_loan_esign
+        where loan_id = #{loanId}
+        and sign_type = #{signType}
     </select>
 </mapper>

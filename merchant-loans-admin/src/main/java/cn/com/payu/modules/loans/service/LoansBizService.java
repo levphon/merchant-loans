@@ -56,6 +56,9 @@ public class LoansBizService {
     @Autowired
     private LoanBankcardMapper loanBankcardMapper;
 
+    @Autowired
+    private LoanEsignMapper loanEsignMapper;
+
     public String applymentIndex(ApplymentIndexReq req, String phone) {
 
         String orderNumber = gainIdService.gainId("B");
@@ -287,12 +290,13 @@ public class LoansBizService {
 
     public void payConfirmbindcard(PayConfirmbindcardReq req) {
         Loan loan = loanMapper.selectByOrderNumber(req.getOrderNumber());
+        LoanBankcard bankcard = loanBankcardMapper.selectByLoanId(loan.getId());
+
         req.setOrderNumber(loan.getApplyNumber());
+        req.setUniqueCode(bankcard.getUniqueCode());
         PayConfirmbindcardResp resp = loansApiService.payConfirmbindcard(req);
 
         //2020/8/14 银行卡信息更新：绑定状态、使用状态
-        LoanBankcard bankcard = loanBankcardMapper.selectByLoanId(loan.getId());
-        bankcard.setUniqueCode(req.getUniqueCode());
         bankcard.setBindStatus(DataDictionary.BindStatus.bound.getCode());
         bankcard.setUseStatus(1);
         loanBankcardMapper.updateByPrimaryKeySelective(bankcard);
@@ -338,7 +342,18 @@ public class LoansBizService {
         req.setSignType(signType);
         EsignGetSignUrlResp resp = loansApiService.esignGetSignUrl(req);
 
-        return resp.getData();
+        EsignGetSignUrlRespData respData = resp.getData();
+
+        Loan loan = loanMapper.selectByOrderNumber(orderNumber);
+        LoanEsign esign = loanEsignMapper.selectByLoanIdAndSignType(loan.getId(), signType);
+        if (esign == null) esign = new LoanEsign();
+        esign.setLoanId(loan.getId());
+        esign.setUrl(respData.getUrl());
+        esign.setShortUrl(respData.getShortUrl());
+        esign.setSignType(signType);
+        loanEsignMapper.insertOrUpdate(esign);
+
+        return respData;
     }
 
     public List<BasicsGetLoansProductsItem> basicsGetLoansProducts() {
