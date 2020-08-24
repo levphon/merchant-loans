@@ -26,8 +26,9 @@
     </sql>
 
     <insert id="insertOrUpdate" parameterType="cn.com.payu.modules.entity.LoanEsign">
-        insert into d_loan_esign(loan_id, url, short_url, enable_status, del_flag, created_date)
+        insert into d_loan_esign(id, loan_id, url, short_url, enable_status, del_flag, created_date)
         values (
+                #{id,jdbcType=INTEGER},
                 #{loanId,jdbcType=INTEGER},
                 #{url,jdbcType=VARCHAR},
                 #{shortUrl,jdbcType=VARCHAR},
