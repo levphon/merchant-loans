@@ -285,7 +285,7 @@ public class LoansBizService {
         bankcard.setUniqueCode(respData.getUniqueCode());
         bankcard.setBindStatus(DataDictionary.BindStatus.unbound.getCode());
         bankcard.setUseStatus(0);
-        loanBankcardMapper.insert(bankcard);
+        loanBankcardMapper.insertOrUpdate(bankcard);
     }
 
     public void payConfirmbindcard(PayConfirmbindcardReq req) {

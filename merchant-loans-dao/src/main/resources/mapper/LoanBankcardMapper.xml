@@ -47,4 +47,47 @@
         and idcard_no = #{idcardNo}
         and mobile = #{mobile}
     </select>
+
+    <insert id="insertOrUpdate" parameterType="cn.com.payu.modules.entity.LoanBankcard">
+        insert into d_loan_bankcard(loan_id,
+                                account_name,
+                                account_no,
+                                idcard_no,
+                                mobile,
+                                bank_code,
+                                branch_name,
+                                bind_status,
+                                unique_code,
+                                use_status,
+                                enable_status,
+                                del_flag,
+                                created_date)
+        values (
+                #{loanId,jdbcType=INTEGER},
+                #{accountName,jdbcType=VARCHAR},
+                #{accountNo,jdbcType=VARCHAR},
+                #{idcardNo,jdbcType=VARCHAR},
+                #{mobile,jdbcType=VARCHAR},
+                #{bankCode,jdbcType=VARCHAR},
+                #{branchName,jdbcType=VARCHAR},
+                #{bindStatus,jdbcType=INTEGER},
+                #{uniqueCode,jdbcType=VARCHAR},
+                #{useStatus,jdbcType=INTEGER},
+                #{enableStatus,jdbcType=INTEGER},
+                #{delFlag,jdbcType=INTEGER},
+                sysdate()
+               )
+        on duplicate key update
+                account_name= #{accountName,jdbcType=VARCHAR},
+                account_no = #{accountNo,jdbcType=VARCHAR},
+                idcard_no = #{idcardNo,jdbcType=VARCHAR},
+                mobile = #{mobile,jdbcType=VARCHAR},
+                bank_code = #{bankCode,jdbcType=VARCHAR},
+                branch_name = #{branchName,jdbcType=VARCHAR},
+                bind_status = #{bindStatus,jdbcType=INTEGER},
+                unique_code = #{uniqueCode,jdbcType=VARCHAR},
+                use_status = #{useStatus,jdbcType=INTEGER},
+                updated_date = sysdate()
+    </insert>
+
 </mapper>

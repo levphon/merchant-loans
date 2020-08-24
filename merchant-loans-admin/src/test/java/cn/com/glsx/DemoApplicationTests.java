@@ -1,11 +1,14 @@
 package cn.com.glsx;
 
 import cn.com.payu.Application;
+import cn.com.payu.common.enmus.DataDictionary;
+import cn.com.payu.modules.entity.LoanBankcard;
 import cn.com.payu.modules.loans.LoansConfig;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.loans.service.LoansApiService;
 import cn.com.payu.modules.loans.service.LoansBizService;
+import cn.com.payu.modules.mapper.LoanBankcardMapper;
 import com.alibaba.fastjson.JSON;
 import com.glsx.plat.redis.service.GainIdService;
 import com.google.gson.Gson;
@@ -526,5 +529,23 @@ public class DemoApplicationTests {
         String s2 = gainIdService.globalUniqueId("B");
         System.out.println(s1);
         System.out.println(s2);
+    }
+
+    @Autowired
+    private LoanBankcardMapper loanBankcardMapper;
+
+    @Test
+    public void testMapper() {
+        LoanBankcard bankcard = loanBankcardMapper.selectByLoanId(8L);
+        if (bankcard == null) bankcard = new LoanBankcard();
+        bankcard.setLoanId(8L);
+        bankcard.setAccountName("张佳");
+        bankcard.setIdcardNo("130524199308060519");
+        bankcard.setAccountNo("6212260406013138574");
+        bankcard.setMobile("15717695671");
+        bankcard.setUniqueCode("202008141034453009669");
+        bankcard.setBindStatus(DataDictionary.BindStatus.unbound.getCode());
+        bankcard.setUseStatus(0);
+        loanBankcardMapper.insertOrUpdate(bankcard);
     }
 }
