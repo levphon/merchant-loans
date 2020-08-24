@@ -60,7 +60,7 @@ public class SalesmanService {
         }
     }
 
-    public void enableOrDisable(Integer id) {
+    public void enableOrDisable(Long id) {
         Salesman salesman = salesmanMapper.selectByPrimaryKey(id);
         if (SysConstants.EnableStatus.enable.getCode().equals(salesman.getEnableStatus())) {
             salesmanMapper.disableById(id);
@@ -69,8 +69,8 @@ public class SalesmanService {
         }
     }
 
-    public void logicDeleteById(Integer[] ids) {
-        for (Integer id : ids) {
+    public void logicDeleteById(Long[] ids) {
+        for (Long id : ids) {
             salesmanMapper.logicDeleteById(id);
         }
     }

@@ -5,7 +5,6 @@ import cn.com.payu.modules.model.SalesmanModel;
 import cn.com.payu.modules.model.export.SalesmanExport;
 import cn.com.payu.modules.model.search.SalesmanSearch;
 import com.glsx.plat.mybatis.mapper.CommonBaseMapper;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,11 +18,11 @@ public interface SalesmanMapper extends CommonBaseMapper<Salesman> {
 
     SalesmanModel selectById(@Param("id") Long id);
 
-    int logicDeleteById(@Param("id") Integer id);
+    int logicDeleteById(@Param("id") Long id);
 
-    void enableById(@Param("id") Integer id);
+    void enableById(@Param("id") Long id);
 
-    void disableById(@Param("id") Integer id);
+    void disableById(@Param("id") Long id);
 
     Salesman selectByJobNo(@Param("jobNo") String jobNo);
 

@@ -78,15 +78,15 @@
         and s_no = #{jobNo}
     </select>
 
-    <update id="enableById" parameterType="java.lang.Integer">
+    <update id="enableById" parameterType="java.lang.Long">
         update d_salesman set enable_status = 1 where id = #{id}
     </update>
 
-    <update id="disableById" parameterType="java.lang.Integer">
+    <update id="disableById" parameterType="java.lang.Long">
         update d_salesman set enable_status = 2 where id = #{id}
     </update>
 
-    <update id="logicDeleteById" parameterType="java.lang.Integer">
+    <update id="logicDeleteById" parameterType="java.lang.Long">
         update d_salesman set del_flag = -1 where id = #{id}
     </update>
 </mapper>

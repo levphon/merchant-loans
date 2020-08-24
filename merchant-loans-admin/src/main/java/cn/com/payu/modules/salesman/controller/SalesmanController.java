@@ -1,7 +1,6 @@
 package cn.com.payu.modules.salesman.controller;
 
 import cn.com.payu.modules.entity.Salesman;
-import cn.com.payu.modules.mapper.SalesmanMapper;
 import cn.com.payu.modules.model.SalesmanModel;
 import cn.com.payu.modules.model.export.SalesmanExport;
 import cn.com.payu.modules.model.search.SalesmanSearch;
@@ -74,8 +73,8 @@ public class SalesmanController {
     /**
      * 启用停用
      */
-    @PostMapping("/startsotp")
-    public R startsotp(@RequestBody Integer id) {
+    @GetMapping("/startstop")
+    public R startsotp(@RequestParam("id") Long id) {
         salesmanService.enableOrDisable(id);
         return R.ok();
     }
@@ -83,8 +82,8 @@ public class SalesmanController {
     /**
      * 删除
      */
-    @PostMapping("/delete")
-    public R delete(@RequestBody Integer[] ids) {
+    @GetMapping("/delete")
+    public R delete(@RequestParam("ids") Long[] ids) {
         salesmanService.logicDeleteById(ids);
         return R.ok();
     }
