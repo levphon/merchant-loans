@@ -96,6 +96,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/captcha")
                 .excludePathPatterns("/login")
                 .excludePathPatterns("/customer/login")
+                .excludePathPatterns("/wx/mp/**")
                 .excludePathPatterns("/api/**");
         registry.addInterceptor(logInterceptor).addPathPatterns("/**");
     }

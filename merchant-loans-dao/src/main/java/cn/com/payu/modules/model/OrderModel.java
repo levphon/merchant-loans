@@ -2,7 +2,6 @@ package cn.com.payu.modules.model;
 
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.util.Date;
 
 @Data
@@ -52,6 +51,16 @@ public class OrderModel {
      */
     private Integer loanStatus;
     private String loanStatusDesc;
+
+    /**
+     * 授权书：0-未签署，1-签署未完成，2-已完成签署
+     */
+    private Integer protocolStatus;
+
+    /**
+     * 合同状态：0-未签署，1-签署未完成，2-已完成签署
+     */
+    private Integer contractStatus;
 
     /**
      * 绑卡状态

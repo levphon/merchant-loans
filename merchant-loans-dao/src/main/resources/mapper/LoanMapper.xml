@@ -15,6 +15,8 @@
         <result column="merchant_rate" jdbcType="REAL" property="merchantRate"/>
         <result column="pay_method" jdbcType="INTEGER" property="payMethod"/>
         <result column="loan_status" jdbcType="INTEGER" property="loanStatus"/>
+        <result column="protocol_status" jdbcType="INTEGER" property="protocolStatus"/>
+        <result column="contract_status" jdbcType="INTEGER" property="contractStatus"/>
         <result column="audit_amount" jdbcType="INTEGER" property="auditAmount"/>
         <result column="audit_period" jdbcType="INTEGER" property="auditPeriod"/>
         <result column="enable_status" jdbcType="INTEGER" property="enableStatus"/>
@@ -29,8 +31,8 @@
           WARNING - @mbg.generated
         -->
         id, order_number, apply_number, product_id, annuity, loan_purpose, loan_period, merchant_rate,
-        pay_method, loan_status, audit_amount, audit_period, enable_status, del_flag, created_date, created_by,
-        updated_date, updated_by
+        pay_method, loan_status, protocol_status, contract_status, audit_amount, audit_period, enable_status, del_flag,
+        created_date, created_by, updated_date, updated_by
     </sql>
     <select id="selectByOrderNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
@@ -49,7 +51,9 @@
     <select id="selectLastLoanByCustomerPhone" parameterType="java.lang.String"
             resultType="cn.com.payu.modules.model.OrderModel">
         select dl.id,dl.order_number orderNumber,dlp.name,dlp.certificate_number certificateNumber,dlp.phone_number phoneNumber,
-        dl.annuity,dl.loan_period loanPeriod, dl.loan_status loanStatus,dcb.bind_status bindStatus,
+        dl.annuity,dl.loan_period loanPeriod,
+        dl.loan_status loanStatus,dl.protocol_status protocolStatus,dl.contract_status contractStatus,
+        dcb.bind_status bindStatus,
         audit_amount auditAmount, audit_period auditPeriod, dl.created_date createdDate
         from d_loan dl
         left join d_loan_personal dlp on dl.id = dlp.loan_id

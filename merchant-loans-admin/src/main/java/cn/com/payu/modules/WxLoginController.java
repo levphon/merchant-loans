@@ -35,7 +35,6 @@ public class WxLoginController extends WxMpUserController {
 
     @Override
     protected Map<String, Object> linkUser(WxMpUser user) {
-
         Customer customer = customerService.getByWxOpenid(user.getOpenId());
         if (customer != null) {
             customer.setAvatar(user.getHeadImgUrl());

@@ -62,6 +62,50 @@ public interface DataDictionary {
         }
     }
 
+    enum SignStatus implements DataDictionary {
+        unsigned {
+            @Override
+            public Integer getCode() {
+                return 0;
+            }
+
+            @Override
+            public String getValue() {
+                return "未签署";
+            }
+        },
+        unfinished {
+            @Override
+            public Integer getCode() {
+                return 1;
+            }
+
+            @Override
+            public String getValue() {
+                return "签署未完成";
+            }
+        }, finished {
+            @Override
+            public Integer getCode() {
+                return 2;
+            }
+
+            @Override
+            public String getValue() {
+                return "已完成签署";
+            }
+        };
+
+        public static String getValueByCode(Integer code) {
+            for (SignStatus status : SignStatus.values()) {
+                if (status.getCode().equals(code)) {
+                    return status.getValue();
+                }
+            }
+            return null;
+        }
+    }
+
     enum BindStatus implements DataDictionary {
         unbound {
             @Override

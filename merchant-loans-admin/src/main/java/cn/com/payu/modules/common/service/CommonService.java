@@ -60,7 +60,7 @@ public class CommonService {
 
         String smsSwitch = PropertiesUtils.getProperty("sms.switch");
         if ("on".equalsIgnoreCase(smsSwitch)) {
-            messageService.sendSms(phone, MessageTemplateKeys.SMS_TEMPLATE_VERIFICATION_CODE);
+            messageService.sendSms(phone, MessageTemplateKeys.SMS_TEMPLATE_VERIFICATION_CODE, code);
         } else {
             code = "1234";
         }

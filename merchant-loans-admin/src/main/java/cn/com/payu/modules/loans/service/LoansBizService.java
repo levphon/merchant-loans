@@ -15,6 +15,7 @@ import com.alibaba.excel.util.StringUtils;
 import com.glsx.plat.common.utils.DateUtils;
 import com.glsx.plat.exception.BusinessException;
 import com.glsx.plat.redis.service.GainIdService;
+import com.glsx.plat.redis.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class LoansBizService {
 
     @Autowired
     private GainIdService gainIdService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Autowired
     private LoanMapper loanMapper;
@@ -357,48 +361,102 @@ public class LoansBizService {
     }
 
     public List<BasicsGetLoansProductsItem> basicsGetLoansProducts() {
+        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        List<BasicsGetLoansProductsItem> itemList = redisUtils.lGet(key);
+        if (!CollectionUtils.isEmpty(itemList)) return itemList;
+
         BasicsGetLoansProductsResp resp = loansApiService.basicsGetLoansProducts(new BasicsGetLoansProductsReq());
-        return resp.getData();
+        itemList = resp.getData();
+        redisUtils.lSet(key, itemList);
+        return itemList;
     }
 
     public Map<String, String> basicsGetLoansPeriods() {
+        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        Map<String, String> stringMap = redisUtils.hmgetT(key);
+        if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
+
         BasicsGetLoansPeriodsResp resp = loansApiService.basicsGetLoansPeriods(new BasicsGetLoansPeriodsReq());
-        return resp.getData();
+        stringMap = resp.getData();
+        redisUtils.hmsetT(key, stringMap);
+        return stringMap;
     }
 
     public Map<String, String> basicsGetHousingTypes() {
+        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        Map<String, String> stringMap = redisUtils.hmgetT(key);
+        if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
+
         BasicsGetHousingTypesResp resp = loansApiService.basicsGetHousingTypes(new BasicsGetHousingTypesReq());
-        return resp.getData();
+        stringMap = resp.getData();
+        redisUtils.hmsetT(key, stringMap);
+        return stringMap;
     }
 
     public Map<String, String> basicsGetTogetherDwellList() {
+        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        Map<String, String> stringMap = redisUtils.hmgetT(key);
+        if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
+
         BasicsGetTogetherDwellListResp resp = loansApiService.basicsGetTogetherDwellList(new BasicsGetTogetherDwellListReq());
-        return resp.getData();
+        stringMap = resp.getData();
+        redisUtils.hmsetT(key, stringMap);
+        return stringMap;
     }
 
     public Map<String, String> basicsGetRelationTypelList() {
+        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        Map<String, String> stringMap = redisUtils.hmgetT(key);
+        if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
+
         BasicsGetRelationTypelListResp resp = loansApiService.basicsGetRelationTypelList(new BasicsGetRelationTypelListReq());
-        return resp.getData();
+        stringMap = resp.getData();
+        redisUtils.hmsetT(key, stringMap);
+        return stringMap;
     }
 
     public Map<String, String> basicsGetLoanPurposeList() {
+        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        Map<String, String> stringMap = redisUtils.hmgetT(key);
+        if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
+
         BasicsGetLoanPurposeListResp resp = loansApiService.basicsGetLoanPurposeList(new BasicsGetLoanPurposeListReq());
-        return resp.getData();
+        stringMap = resp.getData();
+        redisUtils.hmsetT(key, stringMap);
+        return stringMap;
     }
 
     public Map<String, String> basicsGetEducationList() {
+        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        Map<String, String> stringMap = redisUtils.hmgetT(key);
+        if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
+
         BasicsGetEducationListResp resp = loansApiService.basicsGetEducationList(new BasicsGetEducationListReq());
-        return resp.getData();
+        stringMap = resp.getData();
+        redisUtils.hmsetT(key, stringMap);
+        return stringMap;
     }
 
     public Map<String, String> basicsGetMarriageList() {
+        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        Map<String, String> stringMap = redisUtils.hmgetT(key);
+        if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
+
         BasicsGetMarriageListResp resp = loansApiService.basicsGetMarriageList(new BasicsGetMarriageListReq());
-        return resp.getData();
+        stringMap = resp.getData();
+        redisUtils.hmsetT(key, stringMap);
+        return stringMap;
     }
 
     public Map<String, String> basicsGetUnitTypeList() {
+        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        Map<String, String> stringMap = redisUtils.hmgetT(key);
+        if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
+
         BasicsGetUnitTypeListResp resp = loansApiService.basicsGetUnitTypeList(new BasicsGetUnitTypeListReq());
-        return resp.getData();
+        stringMap = resp.getData();
+        redisUtils.hmsetT(key, stringMap);
+        return stringMap;
     }
 
     public List<BasicsGetIndustryTypeListItem> basicsGetIndustryTypeList(Integer pid) {
@@ -509,17 +567,31 @@ public class LoansBizService {
             model.setLoanStatusDesc(LoanStatus.getNameByCode(om.getLoanStatus()));
             model.setBindStatus(om.getBindStatus());
 
-            ApplymentGetSignStateRespData signStateRespData = this.applymentGetSignState(om.getOrderNumber());
-            if (signStateRespData != null) {
-                model.setProtocolStatus(signStateRespData.getProtocolStatus());
-                model.setProtocolMsg(signStateRespData.getProtocolMsg());
-                model.setContractStatus(signStateRespData.getContractStatus());
-                model.setContractMsg(signStateRespData.getContractMsg());
-            } else {
-                model.setProtocolMsg("--");
-                model.setContractMsg("--");
-            }
+            //如果授权书或合同没签署，则去查询最新签署状态
+            if (!DataDictionary.SignStatus.finished.getCode().equals(om.getProtocolStatus())
+                    || !DataDictionary.SignStatus.finished.getCode().equals(om.getContractStatus())) {
+                ApplymentGetSignStateRespData signStateRespData = this.applymentGetSignState(om.getOrderNumber());
+                if (signStateRespData != null) {
+                    model.setProtocolStatus(signStateRespData.getProtocolStatus());
+                    model.setProtocolMsg(signStateRespData.getProtocolMsg());
+                    model.setContractStatus(signStateRespData.getContractStatus());
+                    model.setContractMsg(signStateRespData.getContractMsg());
 
+                    //更新签署状态
+                    Loan loan = loanMapper.selectByPrimaryKey(om.getId());
+                    loan.setProtocolStatus(signStateRespData.getProtocolStatus());
+                    loan.setContractStatus(signStateRespData.getContractStatus());
+                    loanMapper.updateByPrimaryKeySelective(loan);
+                } else {
+                    model.setProtocolMsg("--");
+                    model.setContractMsg("--");
+                }
+            } else {
+                model.setProtocolStatus(om.getProtocolStatus());
+                model.setProtocolMsg(DataDictionary.SignStatus.getValueByCode(om.getProtocolStatus()));
+                model.setContractStatus(om.getContractStatus());
+                model.setContractMsg(DataDictionary.SignStatus.getValueByCode(om.getContractStatus()));
+            }
             if (om.getBindStatus() == null) model.setBindStatus(DataDictionary.BindStatus.unbound.getCode());
             model.setBindStatusDesc(DataDictionary.BindStatus.getValueByCode(om.getBindStatus()));
         }

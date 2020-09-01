@@ -64,6 +64,18 @@ public class Loan extends BaseEntity {
     private Integer loanStatus;
 
     /**
+     * 授权书：0-未签署，1-签署未完成，2-已完成签署
+     */
+    @Column(name = "protocol_status")//
+    private Integer protocolStatus;
+
+    /**
+     * 合同状态：0-未签署，1-签署未完成，2-已完成签署
+     */
+    @Column(name = "contract_status")
+    private Integer contractStatus;
+
+    /**
      * 审批金额
      */
     @Column(name = "audit_amount")

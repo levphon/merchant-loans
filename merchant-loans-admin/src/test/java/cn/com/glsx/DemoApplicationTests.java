@@ -2,6 +2,7 @@ package cn.com.glsx;
 
 import cn.com.payu.Application;
 import cn.com.payu.common.enmus.DataDictionary;
+import cn.com.payu.common.utils.SmsUtils;
 import cn.com.payu.modules.entity.LoanBankcard;
 import cn.com.payu.modules.loans.LoansConfig;
 import cn.com.payu.modules.loans.req.*;
@@ -22,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -62,6 +64,12 @@ public class DemoApplicationTests {
     }
 
     @Test
+    public void test1_1() {
+        List<BasicsGetLoansProductsItem> resp = loansBizService.basicsGetLoansProducts();
+        System.out.println(resp);
+    }
+
+    @Test
     public void test2() {
         BasicsGetLoansPeriodsResp resp = loansApiService.basicsGetLoansPeriods(new BasicsGetLoansPeriodsReq());
         System.out.println(resp);
@@ -71,6 +79,12 @@ public class DemoApplicationTests {
 //            "9":"9月",
 //            "12":"12月"
 //        }
+    }
+
+    @Test
+    public void test2_2() {
+        Map<String, String> resp = loansBizService.basicsGetLoansPeriods();
+        System.out.println(resp);
     }
 
     @Test
@@ -548,4 +562,13 @@ public class DemoApplicationTests {
         bankcard.setUseStatus(0);
         loanBankcardMapper.insertOrUpdate(bankcard);
     }
+
+    @Autowired
+    private SmsUtils smsUtils;
+
+    @Test
+    public void testSms() {
+        smsUtils.send("18682185876", "this is a test!12345");
+    }
+
 }
