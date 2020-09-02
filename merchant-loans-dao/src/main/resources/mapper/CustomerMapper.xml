@@ -41,4 +41,8 @@
         from d_customer
         where wx_openid = #{openId}
     </select>
+
+    <update id="updateWxOpenid">
+        update d_customer set wx_openid = #{openId} where id = #{id}
+    </update>
 </mapper>

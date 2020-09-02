@@ -1,6 +1,7 @@
 package cn.com.payu.modules.customer.service;
 
 import cn.com.payu.common.exception.AdminException;
+import cn.com.payu.modules.customer.model.LoginByMobileDTO;
 import cn.com.payu.modules.entity.Customer;
 import cn.com.payu.modules.mapper.CustomerMapper;
 import cn.com.payu.modules.user.utils.JwtUser;
@@ -27,12 +28,24 @@ public class CustomerService {
     @Autowired
     private CustomerMapper customerMapper;
 
-    public Customer findByPhone(String phone) {
-        return customerMapper.selectByPhone(phone);
-    }
-
     public Customer getByWxOpenid(String openId) {
         return customerMapper.selectByWxOpenid(openId);
+    }
+
+    public Customer login(LoginByMobileDTO loginDTO) {
+        Customer customer = customerMapper.selectByPhone(loginDTO.getPhone());
+        if (StringUtils.isNotEmpty(loginDTO.getOpenid())) {
+            Customer wxCustomer = customerMapper.selectByWxOpenid(loginDTO.getOpenid());
+            if (customer != null && !loginDTO.getOpenid().equals(customer.getWxOpenid())) {
+                if (wxCustomer != null && !wxCustomer.getId().equals(customer.getId())) {
+                    //解绑之前关联用户的openid
+                    customerMapper.updateWxOpenid(wxCustomer.getId(), null);
+                }
+                //绑定openid到当前登录号码
+                customerMapper.updateWxOpenid(customer.getId(), loginDTO.getOpenid());
+            }
+        }
+        return customer;
     }
 
     public String createToken(Customer user) {

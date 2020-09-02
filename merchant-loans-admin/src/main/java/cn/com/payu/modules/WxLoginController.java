@@ -2,8 +2,6 @@ package cn.com.payu.modules;
 
 import cn.com.payu.modules.customer.service.CustomerService;
 import cn.com.payu.modules.entity.Customer;
-import com.glsx.plat.exception.BusinessException;
-import com.glsx.plat.exception.SystemMessage;
 import com.glsx.plat.wechat.modules.controller.WxMpUserController;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -49,15 +47,13 @@ public class WxLoginController extends WxMpUserController {
 
     @Override
     protected Map<String, Object> loginByOpenid(WxMpOAuth2AccessToken accessToken) {
-        Customer customer = customerService.getByWxOpenid(accessToken.getOpenId());
-        if (customer == null)
-            throw BusinessException.create(SystemMessage.NO_LOGIN_INVALID);
-
-        String token = customerService.createToken(customer);
-
         Map<String, Object> rtnMap = new HashMap<>();
-        rtnMap.put("token", token);
-        rtnMap.put("user", customer);
+        Customer customer = customerService.getByWxOpenid(accessToken.getOpenId());
+        if (customer != null) {
+            String token = customerService.createToken(customer);
+            rtnMap.put("token", token);
+            rtnMap.put("user", customer);
+        }
         return rtnMap;
     }
 

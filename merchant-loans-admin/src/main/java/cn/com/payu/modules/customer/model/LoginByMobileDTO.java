@@ -7,16 +7,12 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class LoginByMobileDTO {
 
-    private Integer loginType;
-
     @NotBlank(message = "手机号码不能为空")
     private String phone;
 
     @NotBlank(message = "验证码不能为空")
     private String code;
 
-    private String username;
-
-    private String password;
+    private String openid;
 
 }

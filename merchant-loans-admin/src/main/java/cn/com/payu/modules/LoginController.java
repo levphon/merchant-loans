@@ -113,7 +113,7 @@ public class LoginController {
 
         commonService.verifyCode(loginDTO.getPhone(), loginDTO.getCode());
 
-        Customer customer = customerService.findByPhone(loginDTO.getPhone());
+        Customer customer = customerService.login(loginDTO);
 
         if (customer == null)
             throw BusinessException.create(ResultCodeEnum.UNKNOWN_ACCOUNT.getCode(), ResultCodeEnum.UNKNOWN_ACCOUNT.getMsg());

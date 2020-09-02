@@ -2,16 +2,14 @@ package cn.com.payu.modules.loans.controller;
 
 import cn.com.payu.modules.BaseController;
 import cn.com.payu.modules.loans.model.LoansModel;
+import cn.com.payu.modules.loans.model.PreSigncontractModel;
 import cn.com.payu.modules.loans.req.*;
 import cn.com.payu.modules.loans.resp.*;
 import cn.com.payu.modules.loans.service.LoansBizService;
 import com.glsx.plat.common.annotation.SysLog;
 import com.glsx.plat.core.web.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -119,6 +117,12 @@ public class LoansController extends BaseController {
     public R applymentQueryPlans(String orderNumber) {
         List<ApplymentQueryPlansItem> data = loansBizService.applymentQueryPlans(orderNumber);
         return R.ok().data(data);
+    }
+
+    @GetMapping(value = "/esign/presigncontract")
+    public R preSigncontract(@RequestParam("orderNumber") String orderNumber) {
+        PreSigncontractModel model = loansBizService.preSigncontract(orderNumber);
+        return R.ok().data(model);
     }
 
     @PostMapping(value = "/esign/signcontract")

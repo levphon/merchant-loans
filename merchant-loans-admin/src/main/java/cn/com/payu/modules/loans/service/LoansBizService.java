@@ -321,6 +321,20 @@ public class LoansBizService {
         return resp.getData();
     }
 
+    public PreSigncontractModel preSigncontract(String orderNumber) {
+        Loan loan = loanMapper.selectByOrderNumber(orderNumber);
+        LoanBankcard loanBankcard = loanBankcardMapper.selectByLoanId(loan.getId());
+
+        PreSigncontractModel model = new PreSigncontractModel();
+        model.setAccountName(loanBankcard.getAccountName());
+        model.setIdcardNo(loanBankcard.getIdcardNo());
+        model.setAccountNo(loanBankcard.getAccountNo());
+        model.setMobile(loanBankcard.getMobile());
+        model.setAnnuity(loan.getAnnuity());
+        model.setApplyTime(loan.getCreatedDate());
+        return model;
+    }
+
     public EsignSigncontractRespData esignSigncontract(String orderNumber, String noticeType) {
         Loan loan = loanMapper.selectByOrderNumber(orderNumber);
 
