@@ -11,6 +11,8 @@ import com.glsx.plat.core.constant.BasicConstants;
  */
 public final class Constants extends BasicConstants {
 
+    public static final String MLOANS = "mloans.";
+
     /**
      * 短信验证码前缀key
      */

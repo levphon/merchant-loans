@@ -1,5 +1,6 @@
 package cn.com.payu.modules.loans.service;
 
+import cn.com.payu.common.constant.Constants;
 import cn.com.payu.common.enmus.CallbackType;
 import cn.com.payu.common.enmus.DataDictionary;
 import cn.com.payu.common.enmus.LoanStatus;
@@ -262,8 +263,14 @@ public class LoansBizService {
     }
 
     public List<PayGetBanklistItem> payGetbanklist() {
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
+        List<PayGetBanklistItem> itemList = redisUtils.lGet(key);
+        if (!CollectionUtils.isEmpty(itemList)) return itemList;
+
         PayGetBanklistResp resp = loansApiService.payGetbanklist(new PayGetBanklistReq());
-        return resp.getData();
+        itemList = resp.getData();
+        redisUtils.lSet(key, itemList);
+        return itemList;
     }
 
     public void payPretiedcard(PayPretiedcardReq req) {
@@ -375,7 +382,7 @@ public class LoansBizService {
     }
 
     public List<BasicsGetLoansProductsItem> basicsGetLoansProducts() {
-        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
         List<BasicsGetLoansProductsItem> itemList = redisUtils.lGet(key);
         if (!CollectionUtils.isEmpty(itemList)) return itemList;
 
@@ -386,7 +393,7 @@ public class LoansBizService {
     }
 
     public Map<String, String> basicsGetLoansPeriods() {
-        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
         Map<String, String> stringMap = redisUtils.hmgetT(key);
         if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
 
@@ -397,7 +404,7 @@ public class LoansBizService {
     }
 
     public Map<String, String> basicsGetHousingTypes() {
-        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
         Map<String, String> stringMap = redisUtils.hmgetT(key);
         if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
 
@@ -408,7 +415,7 @@ public class LoansBizService {
     }
 
     public Map<String, String> basicsGetTogetherDwellList() {
-        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
         Map<String, String> stringMap = redisUtils.hmgetT(key);
         if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
 
@@ -419,7 +426,7 @@ public class LoansBizService {
     }
 
     public Map<String, String> basicsGetRelationTypelList() {
-        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
         Map<String, String> stringMap = redisUtils.hmgetT(key);
         if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
 
@@ -430,7 +437,7 @@ public class LoansBizService {
     }
 
     public Map<String, String> basicsGetLoanPurposeList() {
-        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
         Map<String, String> stringMap = redisUtils.hmgetT(key);
         if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
 
@@ -441,7 +448,7 @@ public class LoansBizService {
     }
 
     public Map<String, String> basicsGetEducationList() {
-        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
         Map<String, String> stringMap = redisUtils.hmgetT(key);
         if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
 
@@ -452,7 +459,7 @@ public class LoansBizService {
     }
 
     public Map<String, String> basicsGetMarriageList() {
-        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
         Map<String, String> stringMap = redisUtils.hmgetT(key);
         if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
 
@@ -463,7 +470,7 @@ public class LoansBizService {
     }
 
     public Map<String, String> basicsGetUnitTypeList() {
-        String key = Thread.currentThread().getStackTrace()[1].getMethodName();
+        String key = Constants.MLOANS + Thread.currentThread().getStackTrace()[1].getMethodName();
         Map<String, String> stringMap = redisUtils.hmgetT(key);
         if (!CollectionUtils.isEmpty(stringMap)) return stringMap;
 

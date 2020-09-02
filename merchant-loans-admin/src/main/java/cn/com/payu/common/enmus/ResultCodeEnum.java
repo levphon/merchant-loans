@@ -23,7 +23,8 @@ public enum ResultCodeEnum {
     SMS_VERIFY_CODE_TIMEOUT(301, "短信验证码已过期"),
     SMS_VERIFY_CODE_NOT_RIGHT(302, "短信验证码错误"),
     SMS_VERIFY_CODE_SEND_FAIL(303, "短信验证码发送失败"),
-    UNFOLLOW_OFFICIAL_ACCOUNT(304, "未关注公众号");
+    SMS_VERIFY_CODE_SEND_LIMIT(304, "短信发送今日已达上限"),
+    UNFOLLOW_OFFICIAL_ACCOUNT(308, "未关注公众号");
     /***************************业务相关******************************/
 
     /**

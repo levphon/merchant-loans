@@ -13,18 +13,20 @@ import com.glsx.plat.common.utils.StringUtils;
 import com.glsx.plat.context.utils.PropertiesUtils;
 import com.glsx.plat.exception.BusinessException;
 import com.glsx.plat.redis.utils.RedisUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 /**
  * @author liuyf
- * @Title CommonServiceImpl.java
- * @Package com.glsx.vasp.service.impl
  * @Description 公共Service
  * @date 2019年10月22日 下午3:01:25
  */
+@Slf4j
 @Service
 public class CommonService {
 
@@ -36,8 +38,10 @@ public class CommonService {
 
     @Autowired
     private BaseProvinceMapper provinceMapper;
+
     @Autowired
     private BaseCityMapper cityMapper;
+
     @Autowired
     private BaseAreaMapper areaMapper;
 
@@ -48,8 +52,14 @@ public class CommonService {
      */
     public void sendCode(String phone) {
 
-        String smsKey = Constants.SMS_VERIFY_CODE_PREFIX + phone;
+        String phoneKey = Constants.MLOANS + phone;
+        int dailyCnt = getRedisDailyCnt(phoneKey);
+        int dailyLimit = Integer.parseInt(PropertiesUtils.getProperty("sms.limit", "0"));
+        log.info("{} 今日第{}次发送，每日限额：{}", phoneKey, dailyCnt + 1, dailyLimit);
+        if (dailyCnt >= dailyLimit)
+            throw BusinessException.create(ResultCodeEnum.SMS_VERIFY_CODE_SEND_LIMIT.getCode(), ResultCodeEnum.SMS_VERIFY_CODE_SEND_LIMIT.getMsg());
 
+        String smsKey = Constants.SMS_VERIFY_CODE_PREFIX + phone;
 //        String repeat = "repeat";
 //
 //        if (redisCacheUtil.exists(smsKey + repeat)) throw BusinessException.create("请等待60秒后再发送验证码");
@@ -65,6 +75,7 @@ public class CommonService {
             code = "1234";
         }
         redisUtils.set(smsKey, code, Constants.SMS_VERIFY_CODE_TIMEOUT);
+        setRedisDailyCnt(phoneKey);
     }
 
     /**
@@ -98,6 +109,34 @@ public class CommonService {
 
     public String getProvCityAreaName(String provCode, String cityCode, String areaCode) {
         return getProvinceName(provCode) + getCityName(cityCode) + getAreaName(areaCode);
+    }
+
+    /**
+     * 设置每天缓存次数
+     *
+     * @param key
+     * @return
+     */
+    public int setRedisDailyCnt(String key) {
+        Integer cnt = (Integer) redisUtils.get(key);
+        if (cnt == null) cnt = 0;
+        LocalDateTime midnight = LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), midnight);
+        //long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), midnight);
+        redisUtils.set(key, ++cnt, seconds);
+        return cnt;
+    }
+
+    /**
+     * 获取每天缓存次数
+     *
+     * @param key
+     * @return
+     */
+    public int getRedisDailyCnt(String key) {
+        Integer cnt = (Integer) redisUtils.get(key);
+        if (cnt == null) cnt = 0;
+        return cnt;
     }
 
 }
