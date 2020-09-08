@@ -34,9 +34,15 @@ public class CustomerService {
 
     public Customer login(LoginByMobileDTO loginDTO) {
         Customer customer = customerMapper.selectByPhone(loginDTO.getPhone());
+        if (customer == null) {
+            customer = new Customer();
+            customer.setPhone(loginDTO.getPhone());
+            customerMapper.insertUseGeneratedKeys(customer);
+        }
+
         if (StringUtils.isNotEmpty(loginDTO.getOpenid())) {
             Customer wxCustomer = customerMapper.selectByWxOpenid(loginDTO.getOpenid());
-            if (customer != null && !loginDTO.getOpenid().equals(customer.getWxOpenid())) {
+            if (!loginDTO.getOpenid().equals(customer.getWxOpenid())) {
                 if (wxCustomer != null && !wxCustomer.getId().equals(customer.getId())) {
                     //解绑之前关联用户的openid
                     customerMapper.updateWxOpenid(wxCustomer.getId(), null);

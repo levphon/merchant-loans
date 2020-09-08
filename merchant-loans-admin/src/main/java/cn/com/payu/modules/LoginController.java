@@ -115,9 +115,6 @@ public class LoginController {
 
         Customer customer = customerService.login(loginDTO);
 
-        if (customer == null)
-            throw BusinessException.create(ResultCodeEnum.UNKNOWN_ACCOUNT.getCode(), ResultCodeEnum.UNKNOWN_ACCOUNT.getMsg());
-
         String token = customerService.createToken(customer);
 
         return R.ok().data(token);
