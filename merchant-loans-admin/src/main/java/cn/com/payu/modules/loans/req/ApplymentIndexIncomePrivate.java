@@ -10,36 +10,36 @@ public class ApplymentIndexIncomePrivate {
     /**
      * 近1个月流水(单位：元)，浮点数，保留2位
      */
-    private Float nearlyOneMonth;
+    private BigDecimal nearlyOneMonth;
 
     /**
      * 近2个月流水(单位：元)，浮点数，保留2位
      */
-    private Float nearlyTwoMonth;
+    private BigDecimal nearlyTwoMonth;
 
     /**
      * 近3个月流水(单位：元)，浮点数，保留2位
      */
-    private Float nearlyThirdMonth;
+    private BigDecimal nearlyThirdMonth;
 
     /**
      * 近4个月流水(单位：元)，浮点数，保留2位
      */
-    private Float nearlyFourMonth;
+    private BigDecimal nearlyFourMonth;
 
     /**
      * 近5个月流水(单位：元)，浮点数，保留2位
      */
-    private Float nearlyFiveMonth;
+    private BigDecimal nearlyFiveMonth;
 
     /**
      * 近6个月流水(单位：元)，浮点数，保留2位
      */
-    private Float nearlySixMonth;
+    private BigDecimal nearlySixMonth;
 
     /**
      * 结息金额(单位：元)，浮点数，保留2位
      */
-    private Float interestAmount;
+    private BigDecimal interestAmount;
 
 }
