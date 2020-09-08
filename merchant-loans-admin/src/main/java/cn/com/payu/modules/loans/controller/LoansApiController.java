@@ -26,8 +26,8 @@ public class LoansApiController extends BaseApiController {
     @PostMapping("/callback/applyment")
     public String applymentCallback(@RequestBody @Valid ApplymentIndexCallbackReq req) {
 
-//        boolean flag = verifySign(req, loansConfig.getSecret(), loansConfig.getSalt());
-//        if (!flag) return "fail";
+        boolean flag = verifySign(req, loansConfig.getSecret(), loansConfig.getSalt());
+        if (!flag) return "fail";
 
         int rtnCode = loansBizService.applymentCallback(req);
 

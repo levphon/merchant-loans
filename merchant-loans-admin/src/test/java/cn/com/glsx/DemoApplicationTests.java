@@ -377,13 +377,13 @@ public class DemoApplicationTests {
         ApplymentIndexIncome indexIncome = new ApplymentIndexIncome();
 
         ApplymentIndexIncomePrivate incomePrivate = new ApplymentIndexIncomePrivate();
-        incomePrivate.setNearlyOneMonth(26526F);
-        incomePrivate.setNearlyTwoMonth(26526F);
-        incomePrivate.setNearlyThirdMonth(26526F);
-        incomePrivate.setNearlyFourMonth(26526F);
-        incomePrivate.setNearlyFiveMonth(26526F);
-        incomePrivate.setNearlySixMonth(26526F);
-        incomePrivate.setInterestAmount(26526F);
+        incomePrivate.setNearlyOneMonth(new BigDecimal(26526));
+        incomePrivate.setNearlyTwoMonth(new BigDecimal(26526));
+        incomePrivate.setNearlyThirdMonth(new BigDecimal(26526));
+        incomePrivate.setNearlyFourMonth(new BigDecimal(26526));
+        incomePrivate.setNearlyFiveMonth(new BigDecimal(26526));
+        incomePrivate.setNearlySixMonth(new BigDecimal(26526));
+        incomePrivate.setInterestAmount(new BigDecimal(26526));
         indexIncome.setPrivateIncome(incomePrivate);
 
 //        List<ApplymentIndexSocial> socialData = new ArrayList<>();
