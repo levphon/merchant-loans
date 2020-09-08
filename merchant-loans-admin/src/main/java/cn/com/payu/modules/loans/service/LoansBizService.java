@@ -576,8 +576,9 @@ public class LoansBizService {
 
         OrderModel om = loanMapper.selectLastLoanByCustomerPhone(phone);
 
-        LoansModel model = new LoansModel();
+        LoansModel model = null;
         if (om != null) {
+            model = new LoansModel();
             model.setOrderNumber(om.getOrderNumber());
             model.setName(om.getName());
             model.setIdcardNo(om.getCertificateNumber());

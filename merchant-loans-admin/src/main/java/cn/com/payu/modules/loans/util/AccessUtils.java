@@ -98,6 +98,7 @@ public class AccessUtils {
      */
     protected String generateSign(AbstractApiReq req) {
         String paramsJson = SignUtils.getSignTreeJson(req);
+//        String paramsJson = SignUtils.getSignJson(req);
         return SignUtils.sign(config.getSecret(), paramsJson, config.getSalt());
     }
 
