@@ -388,7 +388,9 @@ public class LoansBizService {
 
         BasicsGetLoansProductsResp resp = loansApiService.basicsGetLoansProducts(new BasicsGetLoansProductsReq());
         itemList = resp.getData();
-        redisUtils.lSet(key, itemList);
+        itemList.forEach(item -> {
+            redisUtils.lSet(key, item);
+        });
         return itemList;
     }
 

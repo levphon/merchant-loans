@@ -1,5 +1,6 @@
 package cn.com.payu.modules.loans.req;
 
+import com.google.gson.annotations.Expose;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ public abstract class AbstractApiCallbackReq {
     /**
      * 签名
      */
+    @Expose
     @NotBlank(message = "签名不能为空")
     private String sign;
 
